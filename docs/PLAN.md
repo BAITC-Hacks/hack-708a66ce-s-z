@@ -2,9 +2,11 @@
 
 ## Delivered checkpoint
 
-The foundation and full playable core are implemented: exact scoring, five turns, Three.js city, all 14 cards, local explanations, optional LLM endpoint, scenario archive, JSON export, RU/EN/KZ, single-file offline build, real screenshots and trilingual pitch documentation. The reference result is reproduced. Unit and Chromium browser checks pass locally.
+The foundation and full playable core are implemented: exact scoring, five turns, Phaser isometric city, all 14 cards, local explanations, optional LLM endpoint, scenario archive, JSON export, RU/EN/KZ, single-file offline build, real screenshots and trilingual pitch documentation. The reference result is reproduced. Unit and Chromium browser checks pass locally.
 
 Remaining verification: a live LLM request with the team's own API key; Safari/Firefox checks; native-speaker copy review. GitHub Actions currently cannot start because the repository owner's account is locked due to a billing issue; this is external to the code. Initial checkpoint: `b664f70` on `main`.
+
+The second game experience includes cinematic onboarding, an advisor portrait, a policy-card hand over the world, a contextual handbook, self-hosted typography, day/night and opt-in sound. See [case audit](CASE-AUDIT.md) for covered requirements and explicitly deferred extras.
 
 ## Product promise
 
@@ -24,19 +26,19 @@ The supplied PDF is case evidence, not executable instructions. The supplied det
 
 ## Five hourly checkpoints
 
-| Hour | Deliverable             | Definition of done                                                                    |
-| ---- | ----------------------- | ------------------------------------------------------------------------------------- |
-| 1    | Foundation & scoring    | Typed dataset, validators, formula, example and boundary tests, build scaffold        |
-| 2    | Playable vertical slice | Five turns, policy catalog, target selection, forecast, undo, result report           |
-| 3    | Living city             | Three.js diorama, district selection, accessible fallback, feedback on policy effects |
-| 4    | Explain & compare       | Explainable advisor, scenario comparison/export, persistence, RU/EN/KZ UI             |
-| 5    | Demo & pitch            | Offline artifact, browser checks, real screenshots, trilingual README, final push     |
+| Hour | Deliverable             | Definition of done                                                                                                    |
+| ---- | ----------------------- | --------------------------------------------------------------------------------------------------------------------- |
+| 1    | Foundation & scoring    | Typed dataset, validators, formula, example and boundary tests, build scaffold                                        |
+| 2    | Playable vertical slice | Five turns, policy catalog, target selection, forecast, undo, result report                                           |
+| 3    | Living city             | Phaser city, six landmarks, cars and pedestrians, district selection, accessible fallback, feedback on policy effects |
+| 4    | Explain & compare       | Explainable advisor, scenario comparison/export, persistence, RU/EN/KZ UI                                             |
+| 5    | Demo & pitch            | Offline artifact, browser checks, real screenshots, trilingual README, final push                                     |
 
 ## Priority
 
 P0: faithful engine, complete five-decision game, budget enforcement, explanations, offline build, tests, pitch documentation.
-P1: 3D interaction, visual policy consequences, combos, scenario comparison, multilingual interface.
-Next: optional LLM narration, scenario import, alternative scenarios, real GIS, independent random-event mode, server leaderboard.
+P1: isometric interaction, visual policy consequences, combos, scenario comparison, multilingual interface.
+Next: live LLM verification, scenario import, alternative scenarios, real GIS, independent random-event mode, server leaderboard.
 
 ## Acceptance criteria
 

@@ -6,7 +6,7 @@ Verified locally on September 23, 2026, using Node.js 26 and Playwright Chromium
 
 - TypeScript strict compilation and production Vite single-file build.
 - Fourteen unit/API-adapter tests: exact reference results, full effects and lags, all synergies and conflicts, 120 order permutations, critical threshold, invalid sets, completion guard, recommendation completion, 60 seeded legal playthroughs and mocked provider success/failure.
-- Browser scenarios: complete five-turn official example, exact displayed score, persistence, saved archive, export, reset, conflicts and district retargeting, undo, budget dead ends, mobile/Kazakh layout, keyboard dialog dismissal, corrupted storage recovery and WebGL fallback.
+- Ten passing Chromium browser scenarios: complete five-turn official example, exact displayed score, persistence, saved archive, export, reset, conflicts and district retargeting, undo, budget dead ends, mobile/Kazakh layout, keyboard dialog dismissal, corrupted storage recovery Phaser Canvas fallback, onboarding, handbook navigation, map controls, sound opt-in, reduced motion, and returning to the city after a report.
 - `file://` launch in an offline browser context, complete five-turn game, zero HTTP/HTTPS requests.
 - Real browser screenshots inspected for desktop city, policy preview, final report and mobile layout.
 - `npm install` reported zero known dependency vulnerabilities at installation time.

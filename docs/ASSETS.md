@@ -2,7 +2,7 @@
 
 Asset: `src/assets/astana-key-art.png`.
 
-Created for this project with the built-in image-generation tool, not the CLI fallback. The image is bundled in the offline HTML and used in the introduction, report and WebGL fallback. The live map is procedural Three.js geometry, not a generated screenshot.
+Created for this project with the built-in image-generation tool, not the CLI fallback. The image is bundled in the offline HTML and used in the introduction, report and renderer-failure fallback. The live map uses Phaser: generated architecture sprites are layered over procedural streets, parks and water, with animated cars and pedestrians.
 
 Final generation prompt:
 
@@ -10,4 +10,24 @@ Final generation prompt:
 
 The supplied output was copied unchanged into this repository. Original generation retained in the local Codex generated-images directory.
 
-Other visuals: Lucide React icons (ISC license), procedural meshes and CSS artwork. Screenshots in `docs/screenshots/` are actual browser captures, not generated UI mockups. No remote fonts, tile APIs, textures or image CDNs are needed at runtime.
+Other visuals: Lucide React icons (ISC license), procedural terrain, actor sprites and CSS artwork. Screenshots in `docs/screenshots/` are actual browser captures, not generated UI mockups. No remote fonts, tile APIs, textures or image CDNs are needed at runtime.
+
+## Isometric architecture atlas
+
+`src/assets/building-atlas.png` — original generated 1536×1024 RGBA atlas, three columns by two rows, equal 512-pixel cells. Six detailed, warm-lit isometric building types: older red-roof apartment block; modern Astana glass tower; school; clinic; courtyard houses; heating/utility facility. Runtime frames use these six cells. The supplied PNG is copied unchanged.
+
+Generation brief: a cohesive classic prerendered city-builder sprite sheet, 2:1 isometric perspective, detailed facades and roof furniture, isolated small ground diamonds, lighting from the upper left, transparent surroundings, no text or UI. Exact cell order: apartment / tower / school; clinic / houses / utilities. These are illustrative structures, not six surveyed real buildings.
+
+## Astana landmark atlas
+
+`src/assets/landmark-atlas.png` — original generated 1536×1024 RGBA atlas with six cells: Baiterek / Aq Orda / Khan Shatyr; Hazret Sultan Mosque / Palace of Peace and Reconciliation / Nur Alem. Generation brief: recognizable architecture, matching isometric camera and lighting, white Baiterek lattice supporting its gold sphere, broad white Aq Orda facade with blue-and-gold dome, sloping translucent Khan Shatyr tent, four-minaret mosque, stone-and-blue-glass pyramid and reflective blue sphere on a podium. Transparent surroundings, complete ground footprints, no text. Copied unchanged; artistic approximations, not architectural models.
+
+Architecture references checked against [Visit Astana: Baiterek](https://visitastana.kz/en/about-city/what-to-see/monument-astana-bayterek/), [Visit Astana: Palace of Peace](https://visitastana.kz/en/about-city/what-to-see/dvorets-mira-i-soglasiya9509/), and the [official Aq Orda description](https://mirror.akorda.kz/public/ru/republic_of_kazakhstan/akorda). No photographs or commercial game assets were copied.
+
+## Fictional advisor
+
+`src/assets/advisor-aida.png` — original generated portrait, copied unchanged. Brief: a fictional Kazakh woman in her thirties, shoulder-length dark hair, petrol jacket and ivory blouse, approachable city planner, painterly game-portrait finish, pale slate backdrop, no words or logos. Aida does not depict or impersonate a real official.
+
+## Fonts and handbook
+
+Manrope and Unbounded variable fonts are bundled through Fontsource, including Cyrillic subsets; their OFL licenses remain in the package metadata. The handbook contains original multilingual writing inspired by topics in the user-supplied 20-page excerpt of _100 советов мэру_, Ilya Varlamov and Maxim Katz, Alpina Non-Fiction, 2020, ISBN 978-5-00139-255-2. Only front matter and contents were available. Full chapters were not read or reproduced. The private PDF is not part of this repository.

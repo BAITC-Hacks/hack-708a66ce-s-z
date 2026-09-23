@@ -1,6 +1,6 @@
 # Model contract
 
-Source: supplied HackAlem case PDF and [detailed synthetic dataset](supplied-dataset.ru.txt). The five district names are labels for the challenge data. Neither the Three.js placements nor the source values represent verified real-world geography or measurements.
+Source: supplied HackAlem case PDF and [detailed synthetic dataset](supplied-dataset.ru.txt). The five district names are labels for the challenge data. Neither the Phaser placements nor the source values represent verified real-world geography or measurements.
 
 ## Inputs
 

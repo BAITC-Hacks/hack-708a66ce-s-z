@@ -7,6 +7,8 @@ const page = await browser.newPage({
 const errors = [];
 page.on('pageerror', (e) => errors.push(e.message));
 await page.goto(process.env.QALA_URL || 'http://localhost:5174');
+await page.getByRole('button', { name: 'Пропустить вступление' }).click();
+await page.locator('.world-loading').waitFor({ state: 'hidden' });
 await page.waitForSelector('.city-map canvas');
 await page.screenshot({ path: 'docs/screenshots/city-ru.png', fullPage: false });
 await page.getByRole('button', { name: 'EN', exact: true }).click();

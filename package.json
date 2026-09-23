@@ -17,17 +17,18 @@
     "format:check": "prettier --check ."
   },
   "dependencies": {
+    "@fontsource-variable/manrope": "^5.3.0",
+    "@fontsource-variable/unbounded": "^5.3.0",
     "lucide-react": "^0.468.0",
+    "phaser": "^3.90.0",
     "react": "^19.1.0",
-    "react-dom": "^19.1.0",
-    "three": "^0.180.0"
+    "react-dom": "^19.1.0"
   },
   "devDependencies": {
     "@playwright/test": "^1.55.1",
     "@types/node": "^22.18.0",
     "@types/react": "^19.1.0",
     "@types/react-dom": "^19.1.0",
-    "@types/three": "^0.180.0",
     "@vitejs/plugin-react": "^5.0.3",
     "prettier": "^3.9.9",
     "tsx": "^4.20.5",

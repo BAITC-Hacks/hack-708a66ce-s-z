@@ -34,7 +34,7 @@ The game borrows district exploration from Civilization, card synergies from Bal
 2. Open `QALA.html` in a modern desktop browser.
 3. Choose RU, EN, or ҚАЗ. Inspect Nura, explore a school or clinic card, and make your first decision.
 
-All JavaScript, Three.js, styles, data, and artwork are inside the HTML. Opening a local file works on the first launch, without a prior online visit. Browser storage preserves your current game when permitted; JSON export works independently. On devices without WebGL, an illustrated map preserves the full game.
+All JavaScript, Phaser, fonts, styles, data, and artwork are inside the HTML. Opening a local file works on the first launch, without a prior online visit. Browser storage preserves your current game when permitted; JSON export works independently. Phaser falls back to Canvas rendering when WebGL is unavailable.
 
 For development, use Node.js **22 or newer**:
 
@@ -55,19 +55,31 @@ Install the browser once if needed: `npx playwright install chromium`.
 
 ## Make a choice. Understand its cost.
 
-| Feature                   | Why it matters                                                                                 |
-| ------------------------- | ---------------------------------------------------------------------------------------------- |
-| Interactive Three.js city | Five selectable districts, score overlay, visible policy markers, orbit and zoom               |
-| Fourteen policy cards     | Cost, implementation delay, target, and actual two-year effects before committing              |
-| Five-decision game        | Budget and conflict checks, undo, and a guard against impossible-to-finish plans               |
-| Policy synergies          | Bus lanes + signals, lighting + digital requests, cleaner fuel + green belt                    |
-| Transparent results       | Population-weighted score, weakest district, critical penalties, all 50 indicators             |
-| Local advisor             | Deterministic, explainable advice works offline; legal next moves are ranked by immediate gain |
-| Optional LLM narration    | A server passes verified engine output to an LLM for a plain-language explanation              |
-| Replay and compare        | Save up to ten scenarios in your browser; export the complete calculation as JSON              |
-| RU / EN / ҚАЗ             | Localized game controls, policy descriptions, help and results                                 |
+| Feature                | Why it matters                                                                                 |
+| ---------------------- | ---------------------------------------------------------------------------------------------- |
+| Living Phaser city     | Six recognizable Astana landmarks, moving cars and pedestrians, districts, pan/zoom, day/night |
+| Mayor onboarding       | Meet fictional advisor Aida, learn the stakes, and take a guided first move                    |
+| Mayor’s handbook       | Eight original, contextual urban-planning tips linked to playable policies                     |
+| Fourteen policy cards  | Cost, implementation delay, target, and actual two-year effects before committing              |
+| Five-decision game     | Budget and conflict checks, undo, and a guard against impossible-to-finish plans               |
+| Policy synergies       | Bus lanes + signals, lighting + digital requests, cleaner fuel + green belt                    |
+| Transparent results    | Population-weighted score, weakest district, critical penalties, all 50 indicators             |
+| Local advisor          | Deterministic, explainable advice works offline; legal next moves are ranked by immediate gain |
+| Optional LLM narration | A server passes verified engine output to an LLM for a plain-language explanation              |
+| Replay and compare     | Save up to ten scenarios in your browser; export the complete calculation as JSON              |
+| RU / EN / ҚАЗ          | Localized game controls, policy descriptions, help and results                                 |
 
 ![Policy preview with consequences](docs/screenshots/policy-preview.png)
+
+## Take office in a city that feels alive
+
+Baiterek’s gold sphere, Aq Orda’s blue dome, Khan Shatyr, Hazret Sultan Mosque, the Palace of Peace and Reconciliation and Nur Alem give this Astana its identity. Original isometric sprites sit on a live Phaser map with **28 cars and 44 pedestrians**, tree-lined streets, bridges and a river. Pan, zoom, pause the city or switch to evening light. Animation is illustrative; it does not introduce random score changes.
+
+![Your advisor welcomes you](docs/screenshots/briefing-en.png)
+
+The mayor’s handbook connects everyday urban questions to the exact game mechanics: access versus traffic flow, safer crossings versus speed, parks versus schools, and protecting the weakest district. Its eight tips are original writing inspired by the **topics** in the supplied excerpt of Ilya Varlamov and Maxim Katz’s _100 Tips for a Mayor_ (2020). The excerpt contains the introduction and contents, not the full chapters. The book PDF is not redistributed.
+
+![Contextual mayor’s handbook](docs/screenshots/handbook-en.png)
 
 ## A fair start. A transparent result.
 
@@ -93,21 +105,24 @@ The supplied baseline reproduces as **52.55768**. The official example (`M7 Nura
 ```text
 Policy cards → validator → deterministic simulation → result + explanation context
                               ↓                         ↓
-                    Three.js city + report       local advisor (offline)
+                    Phaser world + report       local advisor (offline)
                                                 optional LLM (server only)
 ```
 
-**React + TypeScript + Vite + Three.js.** No database or runtime CDN. Lucide icons and original generated Astana key art are bundled locally. Vite’s single-file build makes the game portable.
+**React + TypeScript + Vite + Phaser 3.** No database or runtime CDN. Original generated sprite atlases, Lucide icons, Manrope and Unbounded fonts are bundled locally. Vite’s single-file build makes the game portable.
 
-| Location                     | Responsibility                                                                       |
-| ---------------------------- | ------------------------------------------------------------------------------------ |
-| `src/game/data.ts`           | Supplied district values, weights, policies, translations and synergies              |
-| `src/game/engine.ts`         | Validation, simulation, completion search, recommendations and contributions         |
-| `src/game/explanation.ts`    | Verified explanation context; no model-owned numbers                                 |
-| `src/components/CityMap.tsx` | Three.js scene, picking, effects, cleanup and illustrated fallback                   |
-| `src/App.tsx`                | Card game, previews, reports, language selection and local scenario archive          |
-| `server/advisor.ts`          | Optional local OpenAI Responses API adapter; recomputes all input server-side        |
-| `tests/`                     | Scoring invariants, official example, permutations, seeded runs and browser journeys |
+| Location                        | Responsibility                                                                       |
+| ------------------------------- | ------------------------------------------------------------------------------------ |
+| `src/game/data.ts`              | Supplied district values, weights, policies, translations and synergies              |
+| `src/game/engine.ts`            | Validation, simulation, completion search, recommendations and contributions         |
+| `src/game/explanation.ts`       | Verified explanation context; no model-owned numbers                                 |
+| `src/game/cityScene.ts`         | Phaser terrain, sprite depth, six landmarks, traffic, policy effects and camera      |
+| `src/components/PhaserCity.tsx` | React–Phaser lifecycle, accessible district markers and rendering fallback           |
+| `src/components/GameStage.tsx`  | Onboarding, embedded HUD, policy hand, advisor and handbook                          |
+| `src/game/handbook.ts`          | Original contextual advice in RU, EN and Kazakh                                      |
+| `src/App.tsx`                   | Card game, previews, reports, language selection and local scenario archive          |
+| `server/advisor.ts`             | Optional local OpenAI Responses API adapter; recomputes all input server-side        |
+| `tests/`                        | Scoring invariants, official example, permutations, seeded runs and browser journeys |
 
 ### Optional real LLM explanation
 
@@ -130,6 +145,8 @@ Tests verify the reference result, all policy scopes/delays, all three synergies
 
 Hourly checkpoints run `npm run check` before committing meaningful work and pushing. Run `npm run checkpoint` manually when ready. The helper refuses conflicts, unexpected remotes and likely credential files; it never creates empty commits or force-pushes. The scheduled desktop task additionally reviews changes and ends after the hackathon window.
 
+- [Case requirements and remaining gaps](docs/CASE-AUDIT.md)
+- [Design direction and Taste skill audit](docs/DESIGN.md)
 - [Five-hour implementation plan](docs/PLAN.md)
 - [Model specification and assumptions](docs/MODEL.md)
 - [Two-minute judge walkthrough](docs/DEMO.md)

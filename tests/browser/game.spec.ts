@@ -3,6 +3,9 @@ import { resolve } from 'node:path';
 import { pathToFileURL } from 'node:url';
 async function english(page: Page) {
   await page.getByRole('button', { name: 'EN', exact: true }).click();
+  const skip = page.getByRole('button', { name: 'Skip briefing', exact: true });
+  if (await skip.isVisible()) await skip.click();
+  await expect(page.locator('.world-loading')).not.toBeVisible();
 }
 async function adopt(page: Page, id: string, district = 'Nura') {
   await page.getByTestId(`policy-${id}`).click();
@@ -114,7 +117,8 @@ test('mobile layout, Kazakh language, help and keyboard modal dismiss', async ({
   await page.setViewportSize({ width: 390, height: 844 });
   await page.goto('/');
   await page.getByRole('button', { name: 'ҚАЗ', exact: true }).click();
-  await expect(page.locator('h1')).toHaveText('Бір қала. Бес шешім.');
+  await expect(page.locator('h1')).toHaveText('Қала өмір сүруде. Кезек сізде.');
+  await page.getByRole('button', { name: 'Кіріспені өткізу' }).click();
   expect(await page.evaluate(() => document.documentElement.scrollWidth <= innerWidth)).toBe(true);
   await page.screenshot({ path: 'docs/screenshots/mobile-kk.png', fullPage: false });
   await english(page);
@@ -133,7 +137,7 @@ test('corrupt persisted state recovers to a new game', async ({ page }) => {
   await page.goto('/');
   await expect(page.getByTestId('score')).toContainText('52.56');
 });
-test('WebGL failure keeps playable fallback and district selection', async ({ page }) => {
+test('WebGL failure uses Phaser Canvas and keeps district selection', async ({ page }) => {
   await page.addInitScript(() => {
     const original = HTMLCanvasElement.prototype.getContext;
     HTMLCanvasElement.prototype.getContext = function (this: HTMLCanvasElement, ...args: any[]) {
@@ -143,7 +147,8 @@ test('WebGL failure keeps playable fallback and district selection', async ({ pa
   });
   await page.goto('/');
   await english(page);
-  await expect(page.locator('.fallback-art')).toBeVisible();
+  await expect(page.locator('.phaser-canvas canvas')).toBeVisible();
+  await expect(page.locator('.world-loading')).not.toBeVisible();
   await adopt(page, 'M7');
   await expect(page.getByTestId('budget')).toContainText('76');
 });
@@ -169,4 +174,57 @@ test('optional AI explanation is display-only and fails back to the local report
   await page.getByRole('button', { name: 'Request LLM explanation', exact: true }).click();
   await expect(page.locator('.ai-text')).toContainText('AI service is not connected');
   await expect(page.locator('.explanation')).toContainText('VERIFIABLE LOCAL EXPLANATION');
+});
+
+test('mayor onboarding, contextual handbook, world controls and returning from report', async ({
+  page,
+}) => {
+  await page.goto('/');
+  await page.getByRole('button', { name: 'EN', exact: true }).click();
+  await expect(page.getByRole('heading', { name: 'A city alive. Your move.' })).toBeVisible();
+  await page.screenshot({ path: 'docs/screenshots/onboarding-en.png' });
+  await page.getByRole('button', { name: 'Take office', exact: true }).click();
+  await expect(page.getByText('Welcome, Mayor.', { exact: true })).toBeVisible();
+  await page.screenshot({ path: 'docs/screenshots/briefing-en.png' });
+  await page.getByRole('button', { name: 'Meet your city', exact: true }).click();
+  await expect(page.locator('.world-loading')).not.toBeVisible();
+  await expect(page.locator('.first-move-guide')).toBeVisible();
+  await page.getByRole('button', { name: 'Got it', exact: true }).click();
+  await page.getByRole('combobox', { name: 'Select district' }).selectOption('esil');
+  await expect(page.locator('.dossier-heading')).toContainText('63.0');
+  await page.getByRole('button', { name: 'Zoom in', exact: true }).click();
+  await page.getByRole('button', { name: 'Reset map', exact: true }).click();
+  await page.getByRole('combobox', { name: 'Select district' }).selectOption('nura');
+  await page.getByRole('button', { name: 'Enable sound', exact: true }).click();
+  await page.getByRole('button', { name: 'Mute sound', exact: true }).click();
+  await page
+    .locator('.game-rail')
+    .getByRole('button', { name: 'Mayor’s handbook', exact: true })
+    .click();
+  await expect(page.locator('.handbook-dialog')).toBeVisible();
+  await page.screenshot({ path: 'docs/screenshots/handbook-en.png' });
+  await page.getByRole('button', { name: 'Next', exact: true }).click();
+  await expect(page.locator('.book-page-number')).toContainText('02');
+  await page.getByRole('button', { name: 'Close handbook' }).click();
+  await page.getByRole('button', { name: 'Night mode', exact: true }).click();
+  await expect(page.locator('.game-stage')).toHaveClass(/night/);
+  await page.getByRole('button', { name: 'Pause city', exact: true }).click();
+  await expect(page.getByRole('button', { name: 'Resume city', exact: true })).toBeVisible();
+  await page.screenshot({ path: 'docs/screenshots/night-en.png' });
+  await page.getByRole('button', { name: 'Results', exact: true }).click();
+  await page.getByRole('button', { name: 'My city', exact: true }).click();
+  await expect(page.locator('.world-loading')).not.toBeVisible();
+  await adopt(page, 'M7');
+  await expect(page.getByTestId('budget')).toContainText('76');
+});
+
+test('reduced motion keeps a usable map and a verified advisor suggestion', async ({ page }) => {
+  await page.emulateMedia({ reducedMotion: 'reduce' });
+  await page.goto('/');
+  await english(page);
+  await page.getByRole('button', { name: 'Ask Aida Suggest a legal next move' }).click();
+  await expect(page.getByTestId('commit-policy')).toBeEnabled();
+  await page.getByTestId('commit-policy').click();
+  await expect(page.getByTestId('score')).not.toContainText('52.56');
+  await expect(page.locator('.phaser-canvas canvas')).toBeVisible();
 });
