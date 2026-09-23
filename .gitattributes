@@ -1,0 +1,2 @@
+# Treat the self-contained generated build as an artifact, not reviewable source.
+play/*.html -diff

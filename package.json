@@ -1,0 +1,38 @@
+{
+  "name": "qala-mayor",
+  "version": "0.1.0",
+  "private": true,
+  "type": "module",
+  "scripts": {
+    "dev": "vite --host 0.0.0.0",
+    "build": "tsc -b && vite build",
+    "preview": "vite preview --host 0.0.0.0",
+    "test": "node --import tsx --test tests/*.test.ts",
+    "check": "npm test && npm run build",
+    "test:e2e": "playwright test",
+    "checkpoint": "node scripts/checkpoint.mjs",
+    "start": "node --env-file-if-exists=.env --import tsx server/advisor.ts",
+    "package": "npm run build && node scripts/package.mjs"
+  },
+  "dependencies": {
+    "react": "^19.1.0",
+    "react-dom": "^19.1.0",
+    "three": "^0.180.0",
+    "lucide-react": "^0.468.0"
+  },
+  "devDependencies": {
+    "@types/react": "^19.1.0",
+    "@types/react-dom": "^19.1.0",
+    "@types/three": "^0.180.0",
+    "typescript": "^5.9.2",
+    "vite": "^7.1.7",
+    "@vitejs/plugin-react": "^5.0.3",
+    "vite-plugin-singlefile": "^2.3.0",
+    "tsx": "^4.20.5",
+    "@playwright/test": "^1.55.1",
+    "@types/node": "^22.18.0"
+  },
+  "engines": {
+    "node": ">=22"
+  }
+}
