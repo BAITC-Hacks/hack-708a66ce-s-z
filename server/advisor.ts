@@ -70,6 +70,28 @@ export function createAdvisorServer() {
       fetchSite: req.headers['sec-fetch-site'] as string | undefined,
       remoteAddress: req.socket.remoteAddress,
     };
+    // The public game document must open from an offline file, another port, or an external link.
+    // Only the shell relaxes Origin/Fetch-Site; every API route below keeps the strict guard.
+    if (req.method === 'GET' && (req.url === '/' || req.url === '/index.html')) {
+      if (!isLocalRequest({ host: localRequest.host, remoteAddress: localRequest.remoteAddress })) {
+        send(res, 403, { error: 'Local access only' });
+        return;
+      }
+      try {
+        const html = await readFile(new URL('../dist/index.html', import.meta.url));
+        res.writeHead(200, {
+          'Content-Type': 'text/html; charset=utf-8',
+          'Cache-Control': 'no-store',
+          'X-Content-Type-Options': 'nosniff',
+          'X-Frame-Options': 'DENY',
+          'Content-Security-Policy': "frame-ancestors 'none'",
+        });
+        res.end(html);
+      } catch {
+        send(res, 503, { error: 'Build the game first: npm run build' });
+      }
+      return;
+    }
     if (!isLocalRequest(localRequest)) {
       send(res, 403, { error: 'Same-origin local access only' });
       return;
@@ -117,16 +139,6 @@ export function createAdvisorServer() {
         send(res, 200, credentials.apply(update));
       } catch {
         send(res, 400, { error: 'Invalid credential request' });
-      }
-      return;
-    }
-    if (req.method === 'GET' && (req.url === '/' || req.url === '/index.html')) {
-      try {
-        const html = await readFile(new URL('../dist/index.html', import.meta.url));
-        res.writeHead(200, { 'Content-Type': 'text/html; charset=utf-8' });
-        res.end(html);
-      } catch {
-        send(res, 503, { error: 'Build the game first: npm run build' });
       }
       return;
     }

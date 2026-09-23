@@ -458,3 +458,97 @@ test(
     }
   },
 );
+
+test('public local HTML accepts external navigation while framing, foreign hosts and cross-origin APIs remain blocked', async () => {
+  const originalOpenAI = process.env.OPENAI_API_KEY;
+  const originalJev = process.env.TYPESAFE_API_KEY;
+  delete process.env.OPENAI_API_KEY;
+  delete process.env.TYPESAFE_API_KEY;
+  const server = createAdvisorServer();
+  server.listen(0, '127.0.0.1');
+  await once(server, 'listening');
+  const port = (server.address() as AddressInfo).port;
+  try {
+    const navigations: Record<string, string>[] = [
+      {
+        'Sec-Fetch-Site': 'cross-site',
+        'Sec-Fetch-Mode': 'navigate',
+        'Sec-Fetch-Dest': 'document',
+      },
+      {
+        'Sec-Fetch-Site': 'same-site',
+        'Sec-Fetch-Mode': 'navigate',
+        Origin: 'http://localhost:5175',
+      },
+      { 'Sec-Fetch-Site': 'cross-site', 'Sec-Fetch-Mode': 'navigate', Origin: 'null' },
+    ];
+    for (const path of ['/', '/index.html']) {
+      for (const headers of navigations) {
+        const response = await localRequest(port, path, { headers });
+        assert.ok(
+          [200, 503].includes(response.code),
+          `${path}: navigation should reach the public shell`,
+        );
+        assert.equal(response.headers['access-control-allow-origin'], undefined);
+        if (response.code === 200) {
+          assert.match(String(response.headers['content-type']), /^text\/html/);
+          assert.equal(response.headers['x-frame-options'], 'DENY');
+          assert.match(
+            String(response.headers['content-security-policy']),
+            /(?:^|;)\s*frame-ancestors\s+'none'\s*(?:;|$)/,
+          );
+        } else {
+          assert.match(response.text, /Build the game first/);
+        }
+      }
+      assert.equal(
+        (
+          await localRequest(port, path, {
+            headers: { Host: 'attacker.example', 'Sec-Fetch-Site': 'none' },
+          })
+        ).code,
+        403,
+      );
+    }
+    const rejectedOrigins: Record<string, string>[] = [
+      { 'Sec-Fetch-Site': 'cross-site' },
+      { 'Sec-Fetch-Site': 'same-site' },
+      {
+        Origin: `http://127.0.0.1:${port === 9999 ? 9998 : 9999}`,
+        'Sec-Fetch-Site': 'same-origin',
+      },
+      { Origin: 'null', 'Sec-Fetch-Site': 'none' },
+      { Origin: 'https://attacker.example' },
+      { Host: 'attacker.example' },
+    ];
+    for (const headers of rejectedOrigins) {
+      for (const path of ['/api/session-credentials', '/api/status']) {
+        assert.equal(
+          (await localRequest(port, path, { headers })).code,
+          403,
+          `${path} must retain strict origin checks`,
+        );
+      }
+      for (const path of ['/api/decision-support', '/api/advice']) {
+        const response = await localRequest(port, path, {
+          method: 'POST',
+          headers: { ...headers, 'Content-Type': 'application/json' },
+          body: JSON.stringify({ decisions: [], lang: 'en', goal: 'balanced', question: '' }),
+        });
+        assert.equal(
+          response.code,
+          403,
+          `${path} must reject external origins before advice execution`,
+        );
+      }
+    }
+  } finally {
+    server.close();
+    server.closeAllConnections();
+    await once(server, 'close');
+    if (originalOpenAI === undefined) delete process.env.OPENAI_API_KEY;
+    else process.env.OPENAI_API_KEY = originalOpenAI;
+    if (originalJev === undefined) delete process.env.TYPESAFE_API_KEY;
+    else process.env.TYPESAFE_API_KEY = originalJev;
+  }
+});
