@@ -6,6 +6,7 @@ import { DISTRICTS, type DistrictId, type Lang } from '../game/data';
 import type { Decision, Result } from '../game/engine';
 import atlas from '../assets/building-atlas.png';
 import landmarks from '../assets/landmark-atlas.png';
+import cityLife from '../assets/city-life-atlas.png';
 import fallbackArt from '../assets/astana-key-art.png';
 
 export function PhaserCity({
@@ -16,6 +17,7 @@ export function PhaserCity({
   lang,
   night,
   paused,
+  focusRequest = 0,
 }: {
   selected: DistrictId;
   onSelect: (id: DistrictId) => void;
@@ -24,6 +26,7 @@ export function PhaserCity({
   lang: Lang;
   night: boolean;
   paused: boolean;
+  focusRequest?: number;
 }) {
   const lastSelected = useRef(selected);
   const host = useRef<HTMLDivElement>(null),
@@ -54,6 +57,7 @@ export function PhaserCity({
       },
       atlas,
       landmarks,
+      cityLife,
     );
     scene.current = city;
     try {
@@ -62,7 +66,7 @@ export function PhaserCity({
         parent: host.current!,
         width: host.current!.clientWidth,
         height: host.current!.clientHeight,
-        backgroundColor: '#bac9ad',
+        backgroundColor: '#20394d',
         antialias: true,
         roundPixels: false,
         scene: city,
@@ -86,6 +90,9 @@ export function PhaserCity({
     else scene.current?.highlight(selected);
     lastSelected.current = selected;
   }, [selected, ready]);
+  useEffect(() => {
+    if (ready && focusRequest) scene.current?.focus(selected);
+  }, [focusRequest, ready]);
   useEffect(() => {
     scene.current?.setNight(night);
   }, [night, ready]);

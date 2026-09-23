@@ -1,0 +1,57 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "title": "TypeSafe Jev typed decision request",
+  "type": "object",
+  "additionalProperties": false,
+  "required": ["model", "state", "questions"],
+  "properties": {
+    "model": {
+      "type": "string",
+      "minLength": 1
+    },
+    "state": {
+      "type": "object"
+    },
+    "questions": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["recommended_action", "needs_clarification"],
+      "properties": {
+        "recommended_action": {
+          "type": "object",
+          "additionalProperties": false,
+          "required": ["type", "instructions", "criteria"],
+          "properties": {
+            "type": {
+              "const": "choice"
+            },
+            "instructions": {
+              "type": "string"
+            },
+            "criteria": {
+              "type": "object",
+              "minProperties": 1,
+              "maxProperties": 255,
+              "additionalProperties": {
+                "type": "object"
+              }
+            }
+          }
+        },
+        "needs_clarification": {
+          "type": "object",
+          "additionalProperties": false,
+          "required": ["type", "instructions"],
+          "properties": {
+            "type": {
+              "const": "noul"
+            },
+            "instructions": {
+              "type": "string"
+            }
+          }
+        }
+      }
+    }
+  }
+}

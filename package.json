@@ -19,6 +19,7 @@
   "dependencies": {
     "@fontsource-variable/manrope": "^5.3.0",
     "@fontsource-variable/unbounded": "^5.3.0",
+    "ajv": "^8.20.0",
     "lucide-react": "^0.468.0",
     "phaser": "^3.90.0",
     "react": "^19.1.0",

@@ -5,13 +5,13 @@ export default defineConfig({
   workers: 1,
   timeout: 45000,
   use: {
-    baseURL: 'http://127.0.0.1:4178',
+    baseURL: 'http://127.0.0.1:4179',
     viewport: { width: 1440, height: 1080 },
     screenshot: 'only-on-failure',
   },
   webServer: {
-    command: 'npm run preview -- --port 4178 --strictPort',
-    url: 'http://127.0.0.1:4178',
+    command: 'npm run preview -- --port 4179 --strictPort',
+    url: 'http://127.0.0.1:4179',
     reuseExistingServer: !process.env.CI,
   },
   reporter: 'list',

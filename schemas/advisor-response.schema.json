@@ -1,0 +1,321 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "$id": "https://qala.local/schemas/advisor-response",
+  "title": "QALA advisor-response",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "schemaVersion",
+    "mode",
+    "recommendation",
+    "alternatives",
+    "confidence",
+    "needsClarification",
+    "reviewRequired",
+    "narration",
+    "models",
+    "notice"
+  ],
+  "properties": {
+    "schemaVersion": {
+      "const": "qala.advice/v1"
+    },
+    "mode": {
+      "enum": ["local", "jev", "llm", "hybrid"]
+    },
+    "recommendation": {
+      "anyOf": [
+        {
+          "type": "object",
+          "additionalProperties": false,
+          "required": [
+            "id",
+            "decision",
+            "name",
+            "district",
+            "category",
+            "cost",
+            "lag",
+            "score",
+            "gain",
+            "criticalRemoved",
+            "weakestGain",
+            "categoryGain",
+            "metricDeltas"
+          ],
+          "properties": {
+            "id": {
+              "type": "string",
+              "maxLength": 30
+            },
+            "decision": {
+              "oneOf": [
+                {
+                  "type": "object",
+                  "additionalProperties": false,
+                  "required": ["measureId", "districtId"],
+                  "properties": {
+                    "measureId": {
+                      "enum": ["M1", "M3", "M4", "M5", "M7", "M8", "M9", "M10", "M11", "M13"]
+                    },
+                    "districtId": {
+                      "enum": ["esil", "almaty", "saryarka", "baikonur", "nura"]
+                    }
+                  }
+                },
+                {
+                  "type": "object",
+                  "additionalProperties": false,
+                  "required": ["measureId"],
+                  "properties": {
+                    "measureId": {
+                      "enum": ["M2", "M6", "M12", "M14"]
+                    }
+                  }
+                }
+              ]
+            },
+            "name": {
+              "type": "string",
+              "maxLength": 150
+            },
+            "district": {
+              "type": "string",
+              "maxLength": 80
+            },
+            "category": {
+              "enum": ["transport", "ecology", "social", "safety", "services"]
+            },
+            "cost": {
+              "type": "number"
+            },
+            "lag": {
+              "type": "number"
+            },
+            "score": {
+              "type": "number"
+            },
+            "gain": {
+              "type": "number"
+            },
+            "criticalRemoved": {
+              "type": "number"
+            },
+            "weakestGain": {
+              "type": "number"
+            },
+            "categoryGain": {
+              "type": "number"
+            },
+            "metricDeltas": {
+              "type": "array",
+              "maxItems": 50,
+              "items": {
+                "type": "object",
+                "additionalProperties": false,
+                "required": ["districtId", "indicator", "before", "after", "delta"],
+                "properties": {
+                  "districtId": {
+                    "enum": ["esil", "almaty", "saryarka", "baikonur", "nura"]
+                  },
+                  "indicator": {
+                    "enum": ["T1", "T2", "E1", "E2", "S1", "S2", "B1", "B2", "C1", "C2"]
+                  },
+                  "before": {
+                    "type": "number"
+                  },
+                  "after": {
+                    "type": "number"
+                  },
+                  "delta": {
+                    "type": "number"
+                  }
+                }
+              }
+            }
+          }
+        },
+        {
+          "type": "null"
+        }
+      ]
+    },
+    "alternatives": {
+      "type": "array",
+      "maxItems": 3,
+      "items": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": [
+          "id",
+          "decision",
+          "name",
+          "district",
+          "category",
+          "cost",
+          "lag",
+          "score",
+          "gain",
+          "criticalRemoved",
+          "weakestGain",
+          "categoryGain",
+          "metricDeltas"
+        ],
+        "properties": {
+          "id": {
+            "type": "string",
+            "maxLength": 30
+          },
+          "decision": {
+            "oneOf": [
+              {
+                "type": "object",
+                "additionalProperties": false,
+                "required": ["measureId", "districtId"],
+                "properties": {
+                  "measureId": {
+                    "enum": ["M1", "M3", "M4", "M5", "M7", "M8", "M9", "M10", "M11", "M13"]
+                  },
+                  "districtId": {
+                    "enum": ["esil", "almaty", "saryarka", "baikonur", "nura"]
+                  }
+                }
+              },
+              {
+                "type": "object",
+                "additionalProperties": false,
+                "required": ["measureId"],
+                "properties": {
+                  "measureId": {
+                    "enum": ["M2", "M6", "M12", "M14"]
+                  }
+                }
+              }
+            ]
+          },
+          "name": {
+            "type": "string",
+            "maxLength": 150
+          },
+          "district": {
+            "type": "string",
+            "maxLength": 80
+          },
+          "category": {
+            "enum": ["transport", "ecology", "social", "safety", "services"]
+          },
+          "cost": {
+            "type": "number"
+          },
+          "lag": {
+            "type": "number"
+          },
+          "score": {
+            "type": "number"
+          },
+          "gain": {
+            "type": "number"
+          },
+          "criticalRemoved": {
+            "type": "number"
+          },
+          "weakestGain": {
+            "type": "number"
+          },
+          "categoryGain": {
+            "type": "number"
+          },
+          "metricDeltas": {
+            "type": "array",
+            "maxItems": 50,
+            "items": {
+              "type": "object",
+              "additionalProperties": false,
+              "required": ["districtId", "indicator", "before", "after", "delta"],
+              "properties": {
+                "districtId": {
+                  "enum": ["esil", "almaty", "saryarka", "baikonur", "nura"]
+                },
+                "indicator": {
+                  "enum": ["T1", "T2", "E1", "E2", "S1", "S2", "B1", "B2", "C1", "C2"]
+                },
+                "before": {
+                  "type": "number"
+                },
+                "after": {
+                  "type": "number"
+                },
+                "delta": {
+                  "type": "number"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "confidence": {
+      "type": ["number", "null"],
+      "minimum": 0,
+      "maximum": 1
+    },
+    "needsClarification": {
+      "type": "boolean"
+    },
+    "reviewRequired": {
+      "const": true
+    },
+    "narration": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["summary", "strengths", "tradeoffs", "nextStep"],
+      "properties": {
+        "summary": {
+          "type": "string",
+          "maxLength": 900
+        },
+        "strengths": {
+          "type": "array",
+          "minItems": 1,
+          "maxItems": 3,
+          "items": {
+            "type": "string",
+            "maxLength": 350
+          }
+        },
+        "tradeoffs": {
+          "type": "array",
+          "minItems": 1,
+          "maxItems": 3,
+          "items": {
+            "type": "string",
+            "maxLength": 350
+          }
+        },
+        "nextStep": {
+          "type": "string",
+          "maxLength": 450
+        }
+      }
+    },
+    "models": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["selection", "explanation"],
+      "properties": {
+        "selection": {
+          "type": ["string", "null"],
+          "maxLength": 150
+        },
+        "explanation": {
+          "type": ["string", "null"],
+          "maxLength": 150
+        }
+      }
+    },
+    "notice": {
+      "type": ["string", "null"],
+      "maxLength": 150
+    }
+  }
+}

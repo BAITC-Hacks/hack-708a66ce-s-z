@@ -1,0 +1,886 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "$id": "https://qala.local/schemas/scenario",
+  "title": "QALA scenario",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "$schema",
+    "schemaVersion",
+    "modelVersion",
+    "synthetic",
+    "decisions",
+    "events",
+    "baseline",
+    "result"
+  ],
+  "properties": {
+    "$schema": {
+      "const": "https://qala.local/schemas/scenario"
+    },
+    "schemaVersion": {
+      "const": "qala.scenario/v2"
+    },
+    "modelVersion": {
+      "const": "hackalem-2026-synthetic"
+    },
+    "synthetic": {
+      "const": true
+    },
+    "decisions": {
+      "type": "array",
+      "maxItems": 5,
+      "items": {
+        "oneOf": [
+          {
+            "type": "object",
+            "additionalProperties": false,
+            "required": ["measureId", "districtId"],
+            "properties": {
+              "measureId": {
+                "enum": ["M1", "M3", "M4", "M5", "M7", "M8", "M9", "M10", "M11", "M13"]
+              },
+              "districtId": {
+                "enum": ["esil", "almaty", "saryarka", "baikonur", "nura"]
+              }
+            }
+          },
+          {
+            "type": "object",
+            "additionalProperties": false,
+            "required": ["measureId"],
+            "properties": {
+              "measureId": {
+                "enum": ["M2", "M6", "M12", "M14"]
+              }
+            }
+          }
+        ]
+      }
+    },
+    "events": {
+      "type": "array",
+      "maxItems": 5,
+      "items": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": ["type", "sequence", "decision", "before", "after"],
+        "properties": {
+          "type": {
+            "const": "policy.adopted"
+          },
+          "sequence": {
+            "type": "integer",
+            "minimum": 1,
+            "maximum": 5
+          },
+          "decision": {
+            "oneOf": [
+              {
+                "type": "object",
+                "additionalProperties": false,
+                "required": ["measureId", "districtId"],
+                "properties": {
+                  "measureId": {
+                    "enum": ["M1", "M3", "M4", "M5", "M7", "M8", "M9", "M10", "M11", "M13"]
+                  },
+                  "districtId": {
+                    "enum": ["esil", "almaty", "saryarka", "baikonur", "nura"]
+                  }
+                }
+              },
+              {
+                "type": "object",
+                "additionalProperties": false,
+                "required": ["measureId"],
+                "properties": {
+                  "measureId": {
+                    "enum": ["M2", "M6", "M12", "M14"]
+                  }
+                }
+              }
+            ]
+          },
+          "before": {
+            "type": "object",
+            "additionalProperties": false,
+            "required": ["score", "cost", "critical"],
+            "properties": {
+              "score": {
+                "type": "number"
+              },
+              "cost": {
+                "type": "number"
+              },
+              "critical": {
+                "type": "integer"
+              }
+            }
+          },
+          "after": {
+            "type": "object",
+            "additionalProperties": false,
+            "required": ["score", "cost", "critical"],
+            "properties": {
+              "score": {
+                "type": "number"
+              },
+              "cost": {
+                "type": "number"
+              },
+              "critical": {
+                "type": "integer"
+              }
+            }
+          }
+        }
+      }
+    },
+    "baseline": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "metrics",
+        "districtScores",
+        "average",
+        "weakest",
+        "critical",
+        "score",
+        "cost",
+        "synergies"
+      ],
+      "properties": {
+        "metrics": {
+          "type": "object",
+          "additionalProperties": false,
+          "required": ["esil", "almaty", "saryarka", "baikonur", "nura"],
+          "properties": {
+            "esil": {
+              "type": "object",
+              "additionalProperties": false,
+              "required": ["T1", "T2", "E1", "E2", "S1", "S2", "B1", "B2", "C1", "C2"],
+              "properties": {
+                "T1": {
+                  "type": "number",
+                  "minimum": 0,
+                  "maximum": 100
+                },
+                "T2": {
+                  "type": "number",
+                  "minimum": 0,
+                  "maximum": 100
+                },
+                "E1": {
+                  "type": "number",
+                  "minimum": 0,
+                  "maximum": 100
+                },
+                "E2": {
+                  "type": "number",
+                  "minimum": 0,
+                  "maximum": 100
+                },
+                "S1": {
+                  "type": "number",
+                  "minimum": 0,
+                  "maximum": 100
+                },
+                "S2": {
+                  "type": "number",
+                  "minimum": 0,
+                  "maximum": 100
+                },
+                "B1": {
+                  "type": "number",
+                  "minimum": 0,
+                  "maximum": 100
+                },
+                "B2": {
+                  "type": "number",
+                  "minimum": 0,
+                  "maximum": 100
+                },
+                "C1": {
+                  "type": "number",
+                  "minimum": 0,
+                  "maximum": 100
+                },
+                "C2": {
+                  "type": "number",
+                  "minimum": 0,
+                  "maximum": 100
+                }
+              }
+            },
+            "almaty": {
+              "type": "object",
+              "additionalProperties": false,
+              "required": ["T1", "T2", "E1", "E2", "S1", "S2", "B1", "B2", "C1", "C2"],
+              "properties": {
+                "T1": {
+                  "type": "number",
+                  "minimum": 0,
+                  "maximum": 100
+                },
+                "T2": {
+                  "type": "number",
+                  "minimum": 0,
+                  "maximum": 100
+                },
+                "E1": {
+                  "type": "number",
+                  "minimum": 0,
+                  "maximum": 100
+                },
+                "E2": {
+                  "type": "number",
+                  "minimum": 0,
+                  "maximum": 100
+                },
+                "S1": {
+                  "type": "number",
+                  "minimum": 0,
+                  "maximum": 100
+                },
+                "S2": {
+                  "type": "number",
+                  "minimum": 0,
+                  "maximum": 100
+                },
+                "B1": {
+                  "type": "number",
+                  "minimum": 0,
+                  "maximum": 100
+                },
+                "B2": {
+                  "type": "number",
+                  "minimum": 0,
+                  "maximum": 100
+                },
+                "C1": {
+                  "type": "number",
+                  "minimum": 0,
+                  "maximum": 100
+                },
+                "C2": {
+                  "type": "number",
+                  "minimum": 0,
+                  "maximum": 100
+                }
+              }
+            },
+            "saryarka": {
+              "type": "object",
+              "additionalProperties": false,
+              "required": ["T1", "T2", "E1", "E2", "S1", "S2", "B1", "B2", "C1", "C2"],
+              "properties": {
+                "T1": {
+                  "type": "number",
+                  "minimum": 0,
+                  "maximum": 100
+                },
+                "T2": {
+                  "type": "number",
+                  "minimum": 0,
+                  "maximum": 100
+                },
+                "E1": {
+                  "type": "number",
+                  "minimum": 0,
+                  "maximum": 100
+                },
+                "E2": {
+                  "type": "number",
+                  "minimum": 0,
+                  "maximum": 100
+                },
+                "S1": {
+                  "type": "number",
+                  "minimum": 0,
+                  "maximum": 100
+                },
+                "S2": {
+                  "type": "number",
+                  "minimum": 0,
+                  "maximum": 100
+                },
+                "B1": {
+                  "type": "number",
+                  "minimum": 0,
+                  "maximum": 100
+                },
+                "B2": {
+                  "type": "number",
+                  "minimum": 0,
+                  "maximum": 100
+                },
+                "C1": {
+                  "type": "number",
+                  "minimum": 0,
+                  "maximum": 100
+                },
+                "C2": {
+                  "type": "number",
+                  "minimum": 0,
+                  "maximum": 100
+                }
+              }
+            },
+            "baikonur": {
+              "type": "object",
+              "additionalProperties": false,
+              "required": ["T1", "T2", "E1", "E2", "S1", "S2", "B1", "B2", "C1", "C2"],
+              "properties": {
+                "T1": {
+                  "type": "number",
+                  "minimum": 0,
+                  "maximum": 100
+                },
+                "T2": {
+                  "type": "number",
+                  "minimum": 0,
+                  "maximum": 100
+                },
+                "E1": {
+                  "type": "number",
+                  "minimum": 0,
+                  "maximum": 100
+                },
+                "E2": {
+                  "type": "number",
+                  "minimum": 0,
+                  "maximum": 100
+                },
+                "S1": {
+                  "type": "number",
+                  "minimum": 0,
+                  "maximum": 100
+                },
+                "S2": {
+                  "type": "number",
+                  "minimum": 0,
+                  "maximum": 100
+                },
+                "B1": {
+                  "type": "number",
+                  "minimum": 0,
+                  "maximum": 100
+                },
+                "B2": {
+                  "type": "number",
+                  "minimum": 0,
+                  "maximum": 100
+                },
+                "C1": {
+                  "type": "number",
+                  "minimum": 0,
+                  "maximum": 100
+                },
+                "C2": {
+                  "type": "number",
+                  "minimum": 0,
+                  "maximum": 100
+                }
+              }
+            },
+            "nura": {
+              "type": "object",
+              "additionalProperties": false,
+              "required": ["T1", "T2", "E1", "E2", "S1", "S2", "B1", "B2", "C1", "C2"],
+              "properties": {
+                "T1": {
+                  "type": "number",
+                  "minimum": 0,
+                  "maximum": 100
+                },
+                "T2": {
+                  "type": "number",
+                  "minimum": 0,
+                  "maximum": 100
+                },
+                "E1": {
+                  "type": "number",
+                  "minimum": 0,
+                  "maximum": 100
+                },
+                "E2": {
+                  "type": "number",
+                  "minimum": 0,
+                  "maximum": 100
+                },
+                "S1": {
+                  "type": "number",
+                  "minimum": 0,
+                  "maximum": 100
+                },
+                "S2": {
+                  "type": "number",
+                  "minimum": 0,
+                  "maximum": 100
+                },
+                "B1": {
+                  "type": "number",
+                  "minimum": 0,
+                  "maximum": 100
+                },
+                "B2": {
+                  "type": "number",
+                  "minimum": 0,
+                  "maximum": 100
+                },
+                "C1": {
+                  "type": "number",
+                  "minimum": 0,
+                  "maximum": 100
+                },
+                "C2": {
+                  "type": "number",
+                  "minimum": 0,
+                  "maximum": 100
+                }
+              }
+            }
+          }
+        },
+        "districtScores": {
+          "type": "object",
+          "additionalProperties": false,
+          "required": ["esil", "almaty", "saryarka", "baikonur", "nura"],
+          "properties": {
+            "esil": {
+              "type": "number"
+            },
+            "almaty": {
+              "type": "number"
+            },
+            "saryarka": {
+              "type": "number"
+            },
+            "baikonur": {
+              "type": "number"
+            },
+            "nura": {
+              "type": "number"
+            }
+          }
+        },
+        "average": {
+          "type": "number"
+        },
+        "weakest": {
+          "enum": ["esil", "almaty", "saryarka", "baikonur", "nura"]
+        },
+        "critical": {
+          "type": "array",
+          "maxItems": 50,
+          "items": {
+            "type": "object",
+            "additionalProperties": false,
+            "required": ["districtId", "indicator", "value"],
+            "properties": {
+              "districtId": {
+                "enum": ["esil", "almaty", "saryarka", "baikonur", "nura"]
+              },
+              "indicator": {
+                "enum": ["T1", "T2", "E1", "E2", "S1", "S2", "B1", "B2", "C1", "C2"]
+              },
+              "value": {
+                "type": "number",
+                "minimum": 0,
+                "exclusiveMaximum": 40
+              }
+            }
+          }
+        },
+        "score": {
+          "type": "number"
+        },
+        "cost": {
+          "type": "number",
+          "minimum": 0,
+          "maximum": 100
+        },
+        "synergies": {
+          "type": "array",
+          "maxItems": 3,
+          "items": {
+            "type": "object"
+          }
+        }
+      }
+    },
+    "result": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "metrics",
+        "districtScores",
+        "average",
+        "weakest",
+        "critical",
+        "score",
+        "cost",
+        "synergies"
+      ],
+      "properties": {
+        "metrics": {
+          "type": "object",
+          "additionalProperties": false,
+          "required": ["esil", "almaty", "saryarka", "baikonur", "nura"],
+          "properties": {
+            "esil": {
+              "type": "object",
+              "additionalProperties": false,
+              "required": ["T1", "T2", "E1", "E2", "S1", "S2", "B1", "B2", "C1", "C2"],
+              "properties": {
+                "T1": {
+                  "type": "number",
+                  "minimum": 0,
+                  "maximum": 100
+                },
+                "T2": {
+                  "type": "number",
+                  "minimum": 0,
+                  "maximum": 100
+                },
+                "E1": {
+                  "type": "number",
+                  "minimum": 0,
+                  "maximum": 100
+                },
+                "E2": {
+                  "type": "number",
+                  "minimum": 0,
+                  "maximum": 100
+                },
+                "S1": {
+                  "type": "number",
+                  "minimum": 0,
+                  "maximum": 100
+                },
+                "S2": {
+                  "type": "number",
+                  "minimum": 0,
+                  "maximum": 100
+                },
+                "B1": {
+                  "type": "number",
+                  "minimum": 0,
+                  "maximum": 100
+                },
+                "B2": {
+                  "type": "number",
+                  "minimum": 0,
+                  "maximum": 100
+                },
+                "C1": {
+                  "type": "number",
+                  "minimum": 0,
+                  "maximum": 100
+                },
+                "C2": {
+                  "type": "number",
+                  "minimum": 0,
+                  "maximum": 100
+                }
+              }
+            },
+            "almaty": {
+              "type": "object",
+              "additionalProperties": false,
+              "required": ["T1", "T2", "E1", "E2", "S1", "S2", "B1", "B2", "C1", "C2"],
+              "properties": {
+                "T1": {
+                  "type": "number",
+                  "minimum": 0,
+                  "maximum": 100
+                },
+                "T2": {
+                  "type": "number",
+                  "minimum": 0,
+                  "maximum": 100
+                },
+                "E1": {
+                  "type": "number",
+                  "minimum": 0,
+                  "maximum": 100
+                },
+                "E2": {
+                  "type": "number",
+                  "minimum": 0,
+                  "maximum": 100
+                },
+                "S1": {
+                  "type": "number",
+                  "minimum": 0,
+                  "maximum": 100
+                },
+                "S2": {
+                  "type": "number",
+                  "minimum": 0,
+                  "maximum": 100
+                },
+                "B1": {
+                  "type": "number",
+                  "minimum": 0,
+                  "maximum": 100
+                },
+                "B2": {
+                  "type": "number",
+                  "minimum": 0,
+                  "maximum": 100
+                },
+                "C1": {
+                  "type": "number",
+                  "minimum": 0,
+                  "maximum": 100
+                },
+                "C2": {
+                  "type": "number",
+                  "minimum": 0,
+                  "maximum": 100
+                }
+              }
+            },
+            "saryarka": {
+              "type": "object",
+              "additionalProperties": false,
+              "required": ["T1", "T2", "E1", "E2", "S1", "S2", "B1", "B2", "C1", "C2"],
+              "properties": {
+                "T1": {
+                  "type": "number",
+                  "minimum": 0,
+                  "maximum": 100
+                },
+                "T2": {
+                  "type": "number",
+                  "minimum": 0,
+                  "maximum": 100
+                },
+                "E1": {
+                  "type": "number",
+                  "minimum": 0,
+                  "maximum": 100
+                },
+                "E2": {
+                  "type": "number",
+                  "minimum": 0,
+                  "maximum": 100
+                },
+                "S1": {
+                  "type": "number",
+                  "minimum": 0,
+                  "maximum": 100
+                },
+                "S2": {
+                  "type": "number",
+                  "minimum": 0,
+                  "maximum": 100
+                },
+                "B1": {
+                  "type": "number",
+                  "minimum": 0,
+                  "maximum": 100
+                },
+                "B2": {
+                  "type": "number",
+                  "minimum": 0,
+                  "maximum": 100
+                },
+                "C1": {
+                  "type": "number",
+                  "minimum": 0,
+                  "maximum": 100
+                },
+                "C2": {
+                  "type": "number",
+                  "minimum": 0,
+                  "maximum": 100
+                }
+              }
+            },
+            "baikonur": {
+              "type": "object",
+              "additionalProperties": false,
+              "required": ["T1", "T2", "E1", "E2", "S1", "S2", "B1", "B2", "C1", "C2"],
+              "properties": {
+                "T1": {
+                  "type": "number",
+                  "minimum": 0,
+                  "maximum": 100
+                },
+                "T2": {
+                  "type": "number",
+                  "minimum": 0,
+                  "maximum": 100
+                },
+                "E1": {
+                  "type": "number",
+                  "minimum": 0,
+                  "maximum": 100
+                },
+                "E2": {
+                  "type": "number",
+                  "minimum": 0,
+                  "maximum": 100
+                },
+                "S1": {
+                  "type": "number",
+                  "minimum": 0,
+                  "maximum": 100
+                },
+                "S2": {
+                  "type": "number",
+                  "minimum": 0,
+                  "maximum": 100
+                },
+                "B1": {
+                  "type": "number",
+                  "minimum": 0,
+                  "maximum": 100
+                },
+                "B2": {
+                  "type": "number",
+                  "minimum": 0,
+                  "maximum": 100
+                },
+                "C1": {
+                  "type": "number",
+                  "minimum": 0,
+                  "maximum": 100
+                },
+                "C2": {
+                  "type": "number",
+                  "minimum": 0,
+                  "maximum": 100
+                }
+              }
+            },
+            "nura": {
+              "type": "object",
+              "additionalProperties": false,
+              "required": ["T1", "T2", "E1", "E2", "S1", "S2", "B1", "B2", "C1", "C2"],
+              "properties": {
+                "T1": {
+                  "type": "number",
+                  "minimum": 0,
+                  "maximum": 100
+                },
+                "T2": {
+                  "type": "number",
+                  "minimum": 0,
+                  "maximum": 100
+                },
+                "E1": {
+                  "type": "number",
+                  "minimum": 0,
+                  "maximum": 100
+                },
+                "E2": {
+                  "type": "number",
+                  "minimum": 0,
+                  "maximum": 100
+                },
+                "S1": {
+                  "type": "number",
+                  "minimum": 0,
+                  "maximum": 100
+                },
+                "S2": {
+                  "type": "number",
+                  "minimum": 0,
+                  "maximum": 100
+                },
+                "B1": {
+                  "type": "number",
+                  "minimum": 0,
+                  "maximum": 100
+                },
+                "B2": {
+                  "type": "number",
+                  "minimum": 0,
+                  "maximum": 100
+                },
+                "C1": {
+                  "type": "number",
+                  "minimum": 0,
+                  "maximum": 100
+                },
+                "C2": {
+                  "type": "number",
+                  "minimum": 0,
+                  "maximum": 100
+                }
+              }
+            }
+          }
+        },
+        "districtScores": {
+          "type": "object",
+          "additionalProperties": false,
+          "required": ["esil", "almaty", "saryarka", "baikonur", "nura"],
+          "properties": {
+            "esil": {
+              "type": "number"
+            },
+            "almaty": {
+              "type": "number"
+            },
+            "saryarka": {
+              "type": "number"
+            },
+            "baikonur": {
+              "type": "number"
+            },
+            "nura": {
+              "type": "number"
+            }
+          }
+        },
+        "average": {
+          "type": "number"
+        },
+        "weakest": {
+          "enum": ["esil", "almaty", "saryarka", "baikonur", "nura"]
+        },
+        "critical": {
+          "type": "array",
+          "maxItems": 50,
+          "items": {
+            "type": "object",
+            "additionalProperties": false,
+            "required": ["districtId", "indicator", "value"],
+            "properties": {
+              "districtId": {
+                "enum": ["esil", "almaty", "saryarka", "baikonur", "nura"]
+              },
+              "indicator": {
+                "enum": ["T1", "T2", "E1", "E2", "S1", "S2", "B1", "B2", "C1", "C2"]
+              },
+              "value": {
+                "type": "number",
+                "minimum": 0,
+                "exclusiveMaximum": 40
+              }
+            }
+          }
+        },
+        "score": {
+          "type": "number"
+        },
+        "cost": {
+          "type": "number",
+          "minimum": 0,
+          "maximum": 100
+        },
+        "synergies": {
+          "type": "array",
+          "maxItems": 3,
+          "items": {
+            "type": "object"
+          }
+        }
+      }
+    }
+  }
+}

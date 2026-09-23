@@ -1,0 +1,302 @@
+.isocity-world {
+  position: absolute;
+  inset: 0;
+  overflow: hidden;
+  touch-action: none;
+  background: #19354b;
+  isolation: isolate;
+}
+.isocity-world > canvas {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  pointer-events: none;
+  transition: filter 700ms ease;
+}
+.isocity-terrain {
+  z-index: 0;
+}
+.isocity-life {
+  z-index: 1;
+}
+.isocity-buildings {
+  z-index: 2;
+}
+.isocity-night > canvas {
+  filter: brightness(0.58) saturate(0.72) hue-rotate(8deg);
+}
+.isocity-atmosphere {
+  position: absolute;
+  inset: 0;
+  z-index: 3;
+  pointer-events: none;
+  background: linear-gradient(
+    180deg,
+    rgba(17, 42, 62, 0.25),
+    transparent 25%,
+    transparent 65%,
+    rgba(14, 39, 58, 0.12)
+  );
+}
+.isocity-fallback {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+.isocity-districts {
+  position: absolute;
+  inset: 0;
+  z-index: 4;
+  pointer-events: none;
+}
+.isocity-marker {
+  position: absolute;
+  left: 0;
+  top: 0;
+  display: flex;
+  align-items: center;
+  gap: 9px;
+  padding: 9px 13px;
+  min-width: 95px;
+  min-height: 44px;
+  border: 1px solid #ffffff38;
+  border-radius: 9px;
+  background: #17384bde;
+  color: #f3f0dc;
+  backdrop-filter: blur(8px);
+  box-shadow: 0 5px 16px #0a233529;
+  font:
+    700 12px/1.2 'Manrope Variable',
+    sans-serif;
+  text-align: left;
+  pointer-events: auto;
+  cursor: pointer;
+}
+.isocity-marker small {
+  display: block;
+  font-size: 15px;
+  font-weight: 800;
+  margin-top: 4px;
+  font-variant-numeric: tabular-nums;
+}
+.isocity-marker-pin {
+  width: 7px;
+  height: 7px;
+  background: #e6e2c2;
+  transform: rotate(45deg);
+}
+.isocity-marker.is-selected {
+  background: #f0d890;
+  border-color: #fff0b8;
+  color: #253d49;
+  box-shadow:
+    0 0 0 3px #ffe4a224,
+    0 6px 20px #102c4b38;
+}
+.isocity-marker.is-selected .isocity-marker-pin {
+  background: #425656;
+}
+.isocity-marker:hover {
+  border-color: #ffdf8b;
+}
+.isocity-controls {
+  position: absolute;
+  z-index: 5;
+  right: 24px;
+  bottom: 44px;
+  display: flex;
+  flex-direction: column;
+  border: 1px solid #ffffff40;
+  border-radius: 10px;
+  overflow: hidden;
+  background: #15354adf;
+}
+.isocity-controls button {
+  display: grid;
+  place-items: center;
+  height: 37px;
+  width: 39px;
+  padding: 0;
+  border: 0;
+  border-radius: 0;
+  color: #f6e7bd;
+  background: transparent;
+  cursor: pointer;
+}
+.isocity-controls button + button {
+  border-top: 1px solid #ffffff25;
+}
+.isocity-controls button:hover {
+  background: #ffffff18;
+}
+.isocity-marker:focus-visible,
+.isocity-controls button:focus-visible {
+  outline: 3px solid #ffcf62;
+  outline-offset: 3px;
+}
+.isocity-credit {
+  position: absolute;
+  z-index: 4;
+  left: 34px;
+  bottom: 18px;
+  max-width: 280px;
+  color: #e7eee4b8;
+  font:
+    9px/1.5 'Manrope Variable',
+    sans-serif;
+  pointer-events: none;
+  text-shadow: 0 1px 4px #102c42;
+}
+.isocity-loading {
+  position: absolute;
+  inset: 0;
+  z-index: 8;
+  display: flex;
+  flex-direction: column;
+  gap: 18px;
+  align-items: center;
+  justify-content: center;
+  color: #ece8d9;
+  background: #19354b;
+}
+.isocity-loading b {
+  font:
+    700 48px 'Unbounded Variable',
+    sans-serif;
+  letter-spacing: -0.07em;
+}
+.isocity-loading span {
+  font:
+    500 13px 'Manrope Variable',
+    sans-serif;
+}
+.isocity-loading i {
+  width: 110px;
+  height: 3px;
+  background: linear-gradient(90deg, transparent, #ffcf62, transparent);
+  animation: isocity-loading-pulse 1.5s ease-in-out infinite;
+}
+@keyframes isocity-loading-pulse {
+  50% {
+    opacity: 0.3;
+    transform: scaleX(0.4);
+  }
+}
+@media (max-width: 760px) {
+  .isocity-marker {
+    min-width: 72px;
+    padding: 6px 8px;
+    font-size: 10px;
+    gap: 6px;
+  }
+  .isocity-marker small {
+    font-size: 12px;
+    margin-top: 3px;
+  }
+  .isocity-controls {
+    right: 12px;
+    bottom: 295px;
+  }
+  .isocity-controls button {
+    width: 42px;
+    height: 42px;
+  }
+  .isocity-credit {
+    left: 12px;
+    bottom: 285px;
+    max-width: 225px;
+    font-size: 8px;
+  }
+}
+@media (prefers-reduced-motion: reduce) {
+  .isocity-world > canvas {
+    transition: none;
+  }
+  .isocity-loading i {
+    animation: none;
+  }
+}
+
+.isocity-policy-callout {
+  position: absolute;
+  z-index: 5;
+  width: 202px;
+  padding: 11px 13px;
+  color: #183b4b;
+  background: #fff3cc;
+  border: 1px solid #efd88c;
+  border-radius: 10px;
+  box-shadow: 0 6px 20px #10293e42;
+  pointer-events: none;
+}
+.isocity-policy-callout::after {
+  content: '';
+  position: absolute;
+  left: 92px;
+  bottom: -19px;
+  height: 19px;
+  border-left: 2px solid #f1d68a;
+}
+.isocity-policy-callout span {
+  display: block;
+  margin-bottom: 5px;
+  font:
+    700 9px/1.4 'Manrope Variable',
+    sans-serif;
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+  color: #596849;
+}
+.isocity-policy-callout strong {
+  display: block;
+  font:
+    800 12px/1.35 'Manrope Variable',
+    sans-serif;
+}
+.isocity-policy-callout small {
+  display: block;
+  margin-top: 4px;
+  font:
+    600 10px/1.3 'Manrope Variable',
+    sans-serif;
+  color: #526964;
+}
+.isocity-policy-callout.is-preview {
+  background: #e5f3f7;
+  border-color: #98c9d6;
+}
+.isocity-policy-callout.is-preview::after {
+  border-color: #98c9d6;
+}
+.isocity-policy-callout.is-preview span {
+  color: #46707c;
+}
+@media (max-width: 760px) {
+  .isocity-policy-callout {
+    width: 184px;
+    padding: 8px 10px;
+  }
+  .isocity-policy-callout strong {
+    font-size: 11px;
+  }
+  .isocity-policy-callout span {
+    font-size: 8px;
+  }
+}
+
+.isocity-marker[data-displaced]::before {
+  content: '';
+  position: absolute;
+  top: 50%;
+  left: var(--isocity-leader-left);
+  right: var(--isocity-leader-right);
+  width: var(--isocity-leader-length);
+  height: 1.5px;
+  background: #f7de91;
+  transform: rotate(var(--isocity-leader-angle));
+  transform-origin: var(--isocity-leader-origin);
+  pointer-events: none;
+}

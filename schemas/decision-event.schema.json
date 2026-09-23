@@ -1,0 +1,76 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "title": "Recomputable decision journal event",
+  "type": "object",
+  "additionalProperties": false,
+  "required": ["type", "sequence", "decision", "before", "after"],
+  "properties": {
+    "type": {
+      "const": "policy.adopted"
+    },
+    "sequence": {
+      "type": "integer",
+      "minimum": 1,
+      "maximum": 5
+    },
+    "decision": {
+      "oneOf": [
+        {
+          "type": "object",
+          "additionalProperties": false,
+          "required": ["measureId", "districtId"],
+          "properties": {
+            "measureId": {
+              "enum": ["M1", "M3", "M4", "M5", "M7", "M8", "M9", "M10", "M11", "M13"]
+            },
+            "districtId": {
+              "enum": ["esil", "almaty", "saryarka", "baikonur", "nura"]
+            }
+          }
+        },
+        {
+          "type": "object",
+          "additionalProperties": false,
+          "required": ["measureId"],
+          "properties": {
+            "measureId": {
+              "enum": ["M2", "M6", "M12", "M14"]
+            }
+          }
+        }
+      ]
+    },
+    "before": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["score", "cost", "critical"],
+      "properties": {
+        "score": {
+          "type": "number"
+        },
+        "cost": {
+          "type": "number"
+        },
+        "critical": {
+          "type": "integer"
+        }
+      }
+    },
+    "after": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["score", "cost", "critical"],
+      "properties": {
+        "score": {
+          "type": "number"
+        },
+        "cost": {
+          "type": "number"
+        },
+        "critical": {
+          "type": "integer"
+        }
+      }
+    }
+  }
+}

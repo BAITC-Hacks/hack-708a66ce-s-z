@@ -4,6 +4,7 @@ import { fileURLToPath } from 'node:url';
 import { resolve } from 'node:path';
 import { explanationInput, ADVISOR_INSTRUCTIONS } from '../src/game/explanation';
 import { validate } from '../src/game/engine';
+import { checkSupportRequest, provideDecisionSupport } from './decisionSupport';
 
 export async function generateAdvice(
   input: ReturnType<typeof explanationInput>,
@@ -54,7 +55,19 @@ export function createAdvisorServer() {
       }
       return;
     }
-    if (req.url !== '/api/advice' || req.method !== 'POST') {
+    if (req.url === '/api/status' && req.method === 'GET') {
+      send(res, 200, {
+        openai: Boolean(process.env.OPENAI_API_KEY),
+        jev: Boolean(process.env.TYPESAFE_API_KEY),
+        models: {
+          explanation: process.env.OPENAI_MODEL ?? 'gpt-4.1-mini',
+          selection: process.env.TYPESAFE_MODEL ?? 'jev-1.13.0',
+        },
+      });
+      return;
+    }
+    const structured = req.url === '/api/decision-support';
+    if ((!structured && req.url !== '/api/advice') || req.method !== 'POST') {
       send(res, 404, { error: 'Not found' });
       return;
     }
@@ -72,7 +85,7 @@ export function createAdvisorServer() {
         return;
       }
     }
-    if (!process.env.OPENAI_API_KEY) {
+    if (!structured && !process.env.OPENAI_API_KEY) {
       send(res, 503, {
         error: 'Optional LLM is not configured. Local explanations remain available.',
       });
@@ -92,6 +105,29 @@ export function createAdvisorServer() {
         }
       }
       const payload = JSON.parse(body);
+      if (structured) {
+        if (!checkSupportRequest(payload)) {
+          send(res, 400, { error: 'Invalid decision-support request' });
+          return;
+        }
+        inFlight = true;
+        lastRequest = Date.now();
+        try {
+          const advice = await provideDecisionSupport(payload, {
+            openaiKey: process.env.OPENAI_API_KEY,
+            typesafeKey: process.env.TYPESAFE_API_KEY,
+            openaiModel: process.env.OPENAI_MODEL,
+            jevModel: process.env.TYPESAFE_MODEL,
+          });
+          send(res, 200, advice);
+        } catch {
+          send(res, 502, { error: 'Decision support is temporarily unavailable' });
+        } finally {
+          inFlight = false;
+        }
+        return;
+      }
+
       if (
         !payload ||
         !Array.isArray(payload.decisions) ||
@@ -108,7 +144,7 @@ export function createAdvisorServer() {
       lastRequest = Date.now();
       try {
         const text = await generateAdvice(input, {
-          apiKey: process.env.OPENAI_API_KEY,
+          apiKey: process.env.OPENAI_API_KEY!,
           model: process.env.OPENAI_MODEL,
         });
         send(res, 200, { mode: 'llm', text });
@@ -123,7 +159,7 @@ export function createAdvisorServer() {
   });
 }
 if (process.argv[1] && resolve(process.argv[1]) === fileURLToPath(import.meta.url)) {
-  const port = Number(process.env.ADVISOR_PORT ?? 8787);
+  const port = Number(process.env.ADVISOR_PORT ?? 8789);
   createAdvisorServer().listen(port, '127.0.0.1', () =>
     console.log(`QALA + optional AI advisor: http://localhost:${port}`),
   );

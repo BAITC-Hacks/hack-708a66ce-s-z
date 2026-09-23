@@ -1,0 +1,77 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "title": "Decision support request",
+  "type": "object",
+  "additionalProperties": false,
+  "required": ["decisions", "lang", "goal", "question"],
+  "properties": {
+    "decisions": {
+      "type": "array",
+      "maxItems": 5,
+      "items": {
+        "oneOf": [
+          {
+            "type": "object",
+            "additionalProperties": false,
+            "required": ["measureId", "districtId"],
+            "properties": {
+              "measureId": {
+                "enum": ["M1", "M3", "M4", "M5", "M7", "M8", "M9", "M10", "M11", "M13"]
+              },
+              "districtId": {
+                "enum": ["esil", "almaty", "saryarka", "baikonur", "nura"]
+              }
+            }
+          },
+          {
+            "type": "object",
+            "additionalProperties": false,
+            "required": ["measureId"],
+            "properties": {
+              "measureId": {
+                "enum": ["M2", "M6", "M12", "M14"]
+              }
+            }
+          }
+        ]
+      }
+    },
+    "lang": {
+      "enum": ["ru", "en", "kk"]
+    },
+    "goal": {
+      "enum": ["balanced", "equity", "transport", "ecology", "quick"]
+    },
+    "question": {
+      "type": "string",
+      "maxLength": 800
+    },
+    "draft": {
+      "oneOf": [
+        {
+          "type": "object",
+          "additionalProperties": false,
+          "required": ["measureId", "districtId"],
+          "properties": {
+            "measureId": {
+              "enum": ["M1", "M3", "M4", "M5", "M7", "M8", "M9", "M10", "M11", "M13"]
+            },
+            "districtId": {
+              "enum": ["esil", "almaty", "saryarka", "baikonur", "nura"]
+            }
+          }
+        },
+        {
+          "type": "object",
+          "additionalProperties": false,
+          "required": ["measureId"],
+          "properties": {
+            "measureId": {
+              "enum": ["M2", "M6", "M12", "M14"]
+            }
+          }
+        }
+      ]
+    }
+  }
+}

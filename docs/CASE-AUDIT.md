@@ -2,15 +2,15 @@
 
 Reviewed against the supplied three-page Astana Innovations case PDF and the detailed synthetic dataset on September 23, 2026. The attachments define product requirements; they are not instructions to run commands or publish personal material.
 
-| Requirement                                         | Implementation / evidence                                                                                                                                                                      |
-| --------------------------------------------------- | ---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| Same initial budget and data                        | Fixed 100 budget; five supplied districts and 50 indicators in `data.ts`                                                                                                                       |
-| Five decisions across the five available directions | All 14 measures; exact five-decision completion; at most two per category, as required by the detailed dataset                                                                                 |
-| Prevent overspending                                | Pure validation before every commit; completion search also prevents an unfinished dead end                                                                                                    |
-| Decisions affect indicators and final QoL           | Full supplied effects, eight-quarter horizon, fixed synergies, conflicts and clipping; official example reproduced                                                                             |
-| Explain strengths, risks and consequences           | Forecast modal, all indicator deltas, weakest district, critical penalties, marginal contributions, local advice and optional server LLM narration                                             |
-| AI analysis                                         | Grounded OpenAI Responses adapter is implemented and tested with mock responses. A real keyed call is still unverified. The offline advisor is explicitly rule-based, not presented as an LLM. |
-| README / reproducibility                            | RU/EN/Kazakh pitches, real screenshots, documented model, local tests, downloadable single-file offline game                                                                                   |
+| Requirement                                         | Implementation / evidence                                                                                                                                                |
+| --------------------------------------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------ |
+| Same initial budget and data                        | Fixed 100 budget; five supplied districts and 50 indicators in `data.ts`                                                                                                 |
+| Five decisions across the five available directions | All 14 measures; exact five-decision completion; at most two per category, as required by the detailed dataset                                                           |
+| Prevent overspending                                | Pure validation before every commit; completion search also prevents an unfinished dead end                                                                              |
+| Decisions affect indicators and final QoL           | Full supplied effects, eight-quarter horizon, fixed synergies, conflicts and clipping; official example reproduced                                                       |
+| Explain strengths, risks and consequences           | Forecast modal, all indicator deltas, weakest district, critical penalties, marginal contributions, local advice and optional server LLM narration                       |
+| AI analysis                                         | Jev typed selection and OpenAI structured narration are schema-checked and tested with mocks. Live keyed calls remain unverified. Local advice is explicitly rule-based. |
+| README / reproducibility                            | RU/EN/Kazakh pitches, real screenshots, documented model, local tests, downloadable single-file offline game                                                             |
 
 The broad PDF does not require one decision per category. The detailed dataset says no more than two, and its reference scenario includes two social measures. QALA follows that precise contract.
 
@@ -26,8 +26,12 @@ The onboarding, original artwork, animated city and educational handbook complem
 
 ## Remaining material gaps
 
-1. Verify a live LLM response with the team's server-side API key before demonstrating the AI integration to judges. Never claim the offline templates are generated by a model.
+1. Verify live Jev and/or LLM responses with the team's server-side API key before demonstrating the AI integration to judges. Never claim the offline templates are generated by a model.
 2. GitHub Actions could not start because of the repository owner's account billing lock; local checks remain the available evidence. See [verification](VERIFICATION.md).
 3. Safari/Firefox, mobile hardware and native-speaker Kazakh review remain unverified.
 
 The 100-point rubric allocates 25 to task completion, 25 to technical implementation, 25 to README/reproducibility, 15 to usefulness and 10 to originality. Keep the demo focused on a real five-turn game, a numerical tradeoff, the inspectable result, and the offline artifact before showing extras.
+
+## Game direction
+
+The isolated game version uses a guided first decision, three-card hand, explicit preview and funding, immediate consequence reports, and outcome-based milestones. Supporting tools are grouped in the Mayor’s desk. The user-selected IsoCity rendering layer, bundled assets and Astana landmark layout improve readability without changing any dataset value. Milestones add neither budget nor score. This keeps the entertainment layer aligned with the judged case.

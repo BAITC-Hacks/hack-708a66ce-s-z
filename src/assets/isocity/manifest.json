@@ -1,0 +1,44 @@
+{
+  "upstream": "https://github.com/amilich/isometric-city",
+  "commit": "f1bbce8a93fae61d2446d1ece50309f26531d987",
+  "license": "MIT",
+  "copyright": "Copyright (c) 2025 amilich",
+  "assets": [
+    {
+      "local": "base.webp",
+      "source": "public/assets/sprites_red_water_new.webp",
+      "bytes": 547908,
+      "sha256": "5e709ecdae60d4603aee750755f474b65a9d73063de90a8ca15e51dd76bfb842"
+    },
+    {
+      "local": "dense.webp",
+      "source": "public/assets/sprites_red_water_new_dense.webp",
+      "bytes": 595526,
+      "sha256": "e2ebe9653d331d9b70e2cf1fa2f0f31790403389b4af2d3109743b2d63878908"
+    },
+    {
+      "local": "modern.webp",
+      "source": "public/assets/sprites_red_water_new_modern.webp",
+      "bytes": 527882,
+      "sha256": "a75269fb181dea8e72289d71e42a424c9ef58a348145862a9327d7ec25b8b535"
+    },
+    {
+      "local": "parks.webp",
+      "source": "public/assets/sprites_red_water_new_parks.webp",
+      "bytes": 626448,
+      "sha256": "56431dfba1e981aa94973fbf61daa12343912ddac14f42eca8827994a38ca8fe"
+    },
+    {
+      "local": "services.webp",
+      "source": "public/assets/sprites_red_water_new_services.webp",
+      "bytes": 146898,
+      "sha256": "9bf0460ec9391f083518ba0a9d1aac852e612d38bf7e902a73cc21cd21867242"
+    },
+    {
+      "local": "water.webp",
+      "source": "public/assets/water.webp",
+      "bytes": 23974,
+      "sha256": "e2b6614d64531a8ca5286023c57fb753469f57adbfea71e9b0468ebad93d5012"
+    }
+  ]
+}

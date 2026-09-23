@@ -2,7 +2,7 @@
 
 Asset: `src/assets/astana-key-art.png`.
 
-Created for this project with the built-in image-generation tool, not the CLI fallback. The image is bundled in the offline HTML and used in the introduction, report and renderer-failure fallback. The live map uses Phaser: generated architecture sprites are layered over procedural streets, parks and water, with animated cars and pedestrians.
+Created for this project with the built-in image-generation tool, not the CLI fallback. The image is bundled in the offline HTML and used in the introduction, report and renderer-failure fallback. The original Phaser prototype used generated architecture sprites over procedural streets. The active city now adapts IsoCity Canvas with locally bundled upstream assets; the generated Astana landmarks remain in use.
 
 Final generation prompt:
 
@@ -31,3 +31,7 @@ Architecture references checked against [Visit Astana: Baiterek](https://visitas
 ## Fonts and handbook
 
 Manrope and Unbounded variable fonts are bundled through Fontsource, including Cyrillic subsets; their OFL licenses remain in the package metadata. The handbook contains original multilingual writing inspired by topics in the user-supplied 20-page excerpt of _100 советов мэру_, Ilya Varlamov and Maxim Katz, Alpina Non-Fiction, 2020, ISBN 978-5-00139-255-2. Only front matter and contents were available. Full chapters were not read or reproduced. The private PDF is not part of this repository.
+
+## IsoCity integration
+
+The active city uses six unchanged WebP packs from amilich/isometric-city. See [pinned source, checksums, adaptation details and MIT license](ISOCITY.md). Astana landmark art, the welcome illustration and Aida portrait remain generated QALA assets. The city-life atlas documented in [CITY-ART.md](CITY-ART.md) belongs to the preserved Phaser prototype; the active IsoCity view uses the upstream ambient rendering modules.

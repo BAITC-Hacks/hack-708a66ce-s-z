@@ -34,7 +34,7 @@ The game borrows district exploration from Civilization, card synergies from Bal
 2. Open `QALA.html` in a modern desktop browser.
 3. Choose RU, EN, or ҚАЗ. Inspect Nura, explore a school or clinic card, and make your first decision.
 
-All JavaScript, Phaser, fonts, styles, data, and artwork are inside the HTML. Opening a local file works on the first launch, without a prior online visit. Browser storage preserves your current game when permitted; JSON export works independently. Phaser falls back to Canvas rendering when WebGL is unavailable.
+All JavaScript, fonts, styles, data, and artwork are inside the HTML. Opening a local file works on the first launch, without a prior online visit. Browser storage preserves your current game when permitted; JSON export works independently. The city uses native Canvas and does not require WebGL.
 
 For development, use Node.js **22 or newer**:
 
@@ -55,25 +55,32 @@ Install the browser once if needed: `npx playwright install chromium`.
 
 ## Make a choice. Understand its cost.
 
-| Feature                | Why it matters                                                                                 |
-| ---------------------- | ---------------------------------------------------------------------------------------------- |
-| Living Phaser city     | Six recognizable Astana landmarks, moving cars and pedestrians, districts, pan/zoom, day/night |
-| Mayor onboarding       | Meet fictional advisor Aida, learn the stakes, and take a guided first move                    |
-| Mayor’s handbook       | Eight original, contextual urban-planning tips linked to playable policies                     |
-| Fourteen policy cards  | Cost, implementation delay, target, and actual two-year effects before committing              |
-| Five-decision game     | Budget and conflict checks, undo, and a guard against impossible-to-finish plans               |
-| Policy synergies       | Bus lanes + signals, lighting + digital requests, cleaner fuel + green belt                    |
-| Transparent results    | Population-weighted score, weakest district, critical penalties, all 50 indicators             |
-| Local advisor          | Deterministic, explainable advice works offline; legal next moves are ranked by immediate gain |
-| Optional LLM narration | A server passes verified engine output to an LLM for a plain-language explanation              |
-| Replay and compare     | Save up to ten scenarios in your browser; export the complete calculation as JSON              |
-| RU / EN / ҚАЗ          | Localized game controls, policy descriptions, help and results                                 |
+| Feature                   | Why it matters                                                                                 |
+| ------------------------- | ---------------------------------------------------------------------------------------------- |
+| Living IsoCity scene      | Six recognizable Astana landmarks, moving cars and pedestrians, districts, pan/zoom, day/night |
+| Mayor onboarding          | Meet fictional advisor Aida, then learn through your actual first choice, preview and result   |
+| Mayor’s handbook          | Eight original, contextual urban-planning tips linked to playable policies                     |
+| Fourteen policy cards     | Cost, implementation delay, target, and actual two-year effects before committing              |
+| Five-decision game        | Budget and conflict checks, undo, and a guard against impossible-to-finish plans               |
+| Policy synergies          | Bus lanes + signals, lighting + digital requests, cleaner fuel + green belt                    |
+| Transparent results       | Population-weighted score, weakest district, critical penalties, all 50 indicators             |
+| Local advisor             | Deterministic, explainable advice works offline; legal next moves are ranked by immediate gain |
+| Optional Jev + LLM advice | Typed selection among legal moves, schema-checked alternatives and grounded explanations       |
+| Meaningful milestones     | Resolve critical needs, activate a synergy, improve every district; no hidden score bonuses    |
+| Replay and compare        | Save up to ten scenarios in your browser; export the complete calculation as JSON              |
+| RU / EN / ҚАЗ             | Localized game controls, policy descriptions, help and results                                 |
 
 ![Policy preview with consequences](docs/screenshots/policy-preview.png)
 
+## One clear next move
+
+Start with a short welcome and a district need. Three relevant cards offer manageable choices; all fourteen measures remain one click away. A preview shows the target, cost, delay and calculated consequences before a single budget point is spent. Funding a policy changes the city and opens a short, undoable consequence report. Five decisions end with a term summary and the complete numerical report.
+
+The **Mayor’s desk** holds the advisor, handbook, journal, language and city preferences. The main screen keeps attention on the city and your next decision. Guidance can be skipped or replayed, and movement can be paused. Sound starts only when enabled.
+
 ## Take office in a city that feels alive
 
-Baiterek’s gold sphere, Aq Orda’s blue dome, Khan Shatyr, Hazret Sultan Mosque, the Palace of Peace and Reconciliation and Nur Alem give this Astana its identity. Original isometric sprites sit on a live Phaser map with **28 cars and 44 pedestrians**, tree-lined streets, bridges and a river. Pan, zoom, pause the city or switch to evening light. Animation is illustrative; it does not introduce random score changes.
+Baiterek’s gold sphere, Aq Orda’s blue dome, Khan Shatyr, Hazret Sultan Mosque, the Palace of Peace and Reconciliation and Nur Alem give this Astana its identity. The city adapts the actual building artwork, roads, cars and pedestrians from **[IsoCity](https://github.com/amilich/isometric-city)**, with Astana’s landmarks arranged around the Ishim and the Khan Shatyr–Baiterek–Aq Orda civic axis. Native Canvas renders connected streets, sidewalks, neighbourhood courts and bridges. Required assets are bundled locally; the upstream MIT license is retained in the source and offline HTML. New schools, clinics and parks occupy neighbourhood lots; undo restores the original city. Pan, zoom, pause the city or switch to evening light. Animation is illustrative; it does not introduce random score changes.
 
 ![Your advisor welcomes you](docs/screenshots/briefing-en.png)
 
@@ -105,46 +112,60 @@ The supplied baseline reproduces as **52.55768**. The official example (`M7 Nura
 ```text
 Policy cards → validator → deterministic simulation → result + explanation context
                               ↓                         ↓
-                    Phaser world + report       local advisor (offline)
-                                                optional LLM (server only)
+                    IsoCity scene + report       local advisor (offline)
+                                                Jev selection + LLM explanation (server only)
 ```
 
-**React + TypeScript + Vite + Phaser 3.** No database or runtime CDN. Original generated sprite atlases, Lucide icons, Manrope and Unbounded fonts are bundled locally. Vite’s single-file build makes the game portable.
+**React + TypeScript + Vite + IsoCity Canvas.** No database or runtime CDN. IsoCity building packs, original generated Astana landmarks and welcome art, Lucide icons, Manrope and Unbounded fonts are bundled locally. Vite’s single-file build makes the game portable.
 
-| Location                        | Responsibility                                                                       |
-| ------------------------------- | ------------------------------------------------------------------------------------ |
-| `src/game/data.ts`              | Supplied district values, weights, policies, translations and synergies              |
-| `src/game/engine.ts`            | Validation, simulation, completion search, recommendations and contributions         |
-| `src/game/explanation.ts`       | Verified explanation context; no model-owned numbers                                 |
-| `src/game/cityScene.ts`         | Phaser terrain, sprite depth, six landmarks, traffic, policy effects and camera      |
-| `src/components/PhaserCity.tsx` | React–Phaser lifecycle, accessible district markers and rendering fallback           |
-| `src/components/GameStage.tsx`  | Onboarding, embedded HUD, policy hand, advisor and handbook                          |
-| `src/game/handbook.ts`          | Original contextual advice in RU, EN and Kazakh                                      |
-| `src/App.tsx`                   | Card game, previews, reports, language selection and local scenario archive          |
-| `server/advisor.ts`             | Optional local OpenAI Responses API adapter; recomputes all input server-side        |
-| `tests/`                        | Scoring invariants, official example, permutations, seeded runs and browser journeys |
+| Location                             | Responsibility                                                                       |
+| ------------------------------------ | ------------------------------------------------------------------------------------ |
+| `src/game/data.ts`                   | Supplied district values, weights, policies, translations and synergies              |
+| `src/game/engine.ts`                 | Validation, simulation, completion search, recommendations and contributions         |
+| `src/game/explanation.ts`            | Verified explanation context; no model-owned numbers                                 |
+| `src/game/astanaMap.ts`              | Deterministic Astana layout and policy-linked visible changes                        |
+| `src/components/IsoCity.tsx`         | Cached Canvas layers, camera, accessible districts, traffic and pedestrians          |
+| `src/vendor/isocity/`                | Attributed upstream rendering and animation modules                                  |
+| `src/components/MayorExperience.tsx` | Turn flow, policy hand, preview, consequence report, desk and finale                 |
+| `src/components/MayorOnboarding.tsx` | Contextual introduction, first-decision guidance, skip and replay                    |
+| `src/game/decisionSupport.ts`        | Trusted candidates, goal-based local advice and replayable decision events           |
+| `schemas/`                           | JSON Schema contracts for decisions, Jev, advice and scenario exports                |
+| `src/game/handbook.ts`               | Original contextual advice in RU, EN and Kazakh                                      |
+| `src/App.tsx`                        | Card game, previews, reports, language selection and local scenario archive          |
+| `server/advisor.ts`                  | Local API, provider keys and server-side recalculation                               |
+| `server/decisionSupport.ts`          | Jev typed selection, grounded OpenAI narration and safe fallback                     |
+| `tests/`                             | Scoring invariants, official example, permutations, seeded runs and browser journeys |
 
-### Optional real LLM explanation
+### Optional Jev + OpenAI advice
 
-The default offline advisor is **rule-based, not an LLM**. To enable generated explanations:
+The offline advisor is **rule-based, not an LLM**. It evaluates legal next moves against your selected goal. To connect the optional providers:
 
 ```bash
 cp .env.example .env
-# Set OPENAI_API_KEY in .env. Do not use a VITE_ prefix.
+# Set TYPESAFE_API_KEY for Jev and/or OPENAI_API_KEY for explanations.
+# Keys belong only in .env; never use a VITE_ prefix.
 npm run build
 npm start
 ```
 
-Open `http://localhost:8787`, finish a scenario, and click **Request LLM explanation**. The configurable default is `gpt-4.1-mini`. The server computes the score itself, then sends only synthetic scenario data to the [OpenAI Responses API](https://developers.openai.com/api/docs/guides/text). The model explains strengths, tradeoffs and consequences; it cannot change the displayed score. Keys stay on the server. Provider failure preserves the local report.
+Open `http://localhost:8789`, then **Mayor’s desk → AI advisor → Get advice**. In development, Vite forwards `/api` to the same local server. `GET /api/status` reports which providers are configured without revealing keys.
 
-The adapter is tested with mocked provider responses. A live call requires your key and connectivity and has **not been verified in this build**. The server binds to localhost and is a demo integration, not an authenticated public service.
+[Jev](https://typesafe.ai/blog/introducing-system-one-models-and-jev) selects a typed candidate from engine-verified legal options. A Noul question flags ambiguous requests. OpenAI Responses explains computed outcomes using a strict JSON narration schema. Defaults are `jev-1.13.0` and `gpt-4.1-mini`, configurable in `.env`. Either provider can operate independently. With neither key, the local analysis remains available.
+
+The browser checks the response schema and rebuilds candidate numbers from the deterministic engine. Suggestions require your explicit review and funding. Changing context invalidates pending advice; provider errors fall back visibly. Jev confidence describes model selection, not the likelihood of a real city outcome. See [all eight contracts and validation boundaries](docs/AI-CONTRACTS.md).
+
+Adapters are tested with mocked responses. Live paid calls **have not been verified without your keys**. Keys stay on the localhost server; the single-file offline game contains none. The server is a local demo integration, not an authenticated public service.
 
 ## Reproducibility is part of the product
 
 Tests verify the reference result, all policy scopes/delays, all three synergies, strict critical thresholds, all 120 permutations of the sample scenario, invalid sets, budget dead ends, and 60 seeded legal playthroughs. Browser tests play all five turns, reload saved state, export JSON, check mobile/Kazakh UI, exercise conflicts, and play from `file://` with networking disabled.
 
-Hourly checkpoints run `npm run check` before committing meaningful work and pushing. Run `npm run checkpoint` manually when ready. The helper refuses conflicts, unexpected remotes and likely credential files; it never creates empty commits or force-pushes. The scheduled desktop task additionally reviews changes and ends after the hackathon window.
+Run `npm run checkpoint` for a checked commit and push on the current branch. The helper refuses conflicts, unexpected remotes and likely credential files; it never creates empty commits or force-pushes. The scheduled desktop task additionally reviews changes and ends after the hackathon window.
 
+- [Current experience plan](docs/EXPERIENCE-V3.md)
+- [AI and Jev schema contracts](docs/AI-CONTRACTS.md)
+- [IsoCity source, license and adaptations](docs/ISOCITY.md)
+- [Astana layout and geographic references](docs/ASTANA-MAP.md)
 - [Case requirements and remaining gaps](docs/CASE-AUDIT.md)
 - [Design direction and Taste skill audit](docs/DESIGN.md)
 - [Five-hour implementation plan](docs/PLAN.md)

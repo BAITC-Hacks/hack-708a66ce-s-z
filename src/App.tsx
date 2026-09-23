@@ -49,7 +49,8 @@ import {
   type IssueCode,
 } from './game/engine';
 import { readDecisions, readRuns, save, SAVE_KEY, type SavedRun } from './game/storage';
-import { GameStage } from './components/GameStage';
+import { MayorExperience } from './components/MayorExperience';
+import { scenarioDocument } from './game/decisionSupport';
 import keyArt from './assets/astana-key-art.png';
 
 const ICONS = {
@@ -74,8 +75,6 @@ export default function App() {
   const [lang, setLang] = useState<Lang>(initialLang),
     [decisions, setDecisions] = useState<Decision[]>(readDecisions),
     [selected, setSelected] = useState<DistrictId>('nura'),
-    [pending, setPending] = useState<Measure | null>(null),
-    [target, setTarget] = useState<DistrictId>('nura'),
     [view, setView] = useState<'city' | 'report' | 'archive'>('city'),
     [help, setHelp] = useState(false),
     [runs, setRuns] = useState<SavedRun[]>(readRuns),
@@ -88,62 +87,11 @@ export default function App() {
     document.body.dataset.view = view;
   }, [view]);
   const aiRequest = useRef<AbortController | null>(null);
-  const dialogRef = useRef<HTMLDialogElement>(null),
-    helpRef = useRef<HTMLDialogElement>(null),
+  const helpRef = useRef<HTMLDialogElement>(null),
     resetRef = useRef<HTMLDialogElement>(null);
   const t = (ru: string, en: string, kk: string) => ({ ru, en, kk })[lang];
   const result = useMemo(() => simulate(decisions), [decisions]);
-  const suggestion = useMemo(
-    () => (decisions.length < 5 ? recommend(decisions) : null),
-    [decisions],
-  );
-  const next: Decision | undefined = pending
-    ? { measureId: pending.id, ...(pending.scope === 'district' ? { districtId: target } : {}) }
-    : undefined;
-  const issues = next ? moveIssues(decisions, next) : [];
-  const preview = next && !issues.length ? simulate([...decisions, next]) : null;
   const complete = decisions.length === 5;
-  const issueText = (code: IssueCode) =>
-    ({
-      count: t(
-        'Нужно ровно пять решений.',
-        'Choose exactly five policies.',
-        'Дәл бес шешім қажет.',
-      ),
-      duplicate: t(
-        'Эта мера уже принята.',
-        'This policy is already adopted.',
-        'Бұл шара қабылданған.',
-      ),
-      unknown: t('Неизвестная мера.', 'Unknown policy.', 'Белгісіз шара.'),
-      target: t('Выберите подходящий район.', 'Choose a valid district.', 'Ауданды таңдаңыз.'),
-      budget: t('Недостаточно бюджета.', 'Not enough budget.', 'Бюджет жеткіліксіз.'),
-      category: t(
-        'Максимум две меры в одном направлении.',
-        'At most two policies per category.',
-        'Бір бағытта ең көбі екі шара.',
-      ),
-      'transport-conflict': t(
-        'Автобусные полосы и ЛРТ несовместимы.',
-        'Bus lanes and light rail cannot be combined.',
-        'Автобус жолағы мен LRT бірге таңдалмайды.',
-      ),
-      'land-conflict': t(
-        'Парк и школа занимают один участок. Выберите другой район.',
-        'The park and school need the same site. Try another district.',
-        'Саябақ пен мектепке бір жер қажет. Басқа аудан таңдаңыз.',
-      ),
-      'utility-conflict': t(
-        'Чистое топливо и новые сети дублируются в этом районе.',
-        'Clean heating and utility renewal overlap in this district.',
-        'Таза отын мен жаңа желілер осы ауданда қайталанады.',
-      ),
-      'dead-end': t(
-        'После этого выбора не получится завершить пять решений. Попробуйте более доступную меру.',
-        'This choice leaves no legal way to finish five decisions. Try a more affordable policy.',
-        'Бұл таңдаудан кейін бес шешімді аяқтау мүмкін емес. Арзанырақ шараны таңдаңыз.',
-      ),
-    })[code];
   useEffect(() => {
     if (!save(SAVE_KEY, decisions)) setStorageWarning(true);
   }, [decisions]);
@@ -166,10 +114,6 @@ export default function App() {
     }
   }, [toast]);
   useEffect(() => {
-    if (pending) dialogRef.current?.showModal();
-    else dialogRef.current?.close();
-  }, [pending]);
-  useEffect(() => {
     if (help) helpRef.current?.showModal();
     else helpRef.current?.close();
   }, [help]);
@@ -177,24 +121,6 @@ export default function App() {
     if (resetConfirm) resetRef.current?.showModal();
     else resetRef.current?.close();
   }, [resetConfirm]);
-  const choose = (m: Measure) => {
-    setTarget(selected);
-    setPending(m);
-  };
-  const commit = () => {
-    if (!next || issues.length) return;
-    const updated = [...decisions, next];
-    setDecisions(updated);
-    setPending(null);
-    setToast(
-      t(
-        'Решение принято. Прогноз города обновлён.',
-        'Policy adopted. Your city forecast is updated.',
-        'Шешім қабылданды. Қала болжамы жаңартылды.',
-      ),
-    );
-    if (updated.length === 5) setView('report');
-  };
   const reset = () => {
     setDecisions([]);
     setView('city');
@@ -219,16 +145,7 @@ export default function App() {
     );
   };
   const exportRun = () => {
-    const payload = {
-      app: 'QALA',
-      version: 1,
-      synthetic: true,
-      decisions,
-      result,
-      baseline: BASELINE,
-      formula: '0.7 * populationWeightedMean + 0.3 * minDistrictScore - criticalCount',
-      explanationMode: 'deterministic',
-    };
+    const payload = scenarioDocument(decisions);
     const url = URL.createObjectURL(
       new Blob([JSON.stringify(payload, null, 2)], { type: 'application/json' }),
     );
@@ -285,20 +202,16 @@ export default function App() {
   return (
     <>
       {view === 'city' && (
-        <GameStage
+        <MayorExperience
           selected={selected}
           onSelect={setSelected}
           result={result}
           decisions={decisions}
           lang={lang}
           onLang={setLang}
-          onPolicy={choose}
-          onSuggest={() => {
-            if (suggestion) {
-              setTarget(suggestion.decision.districtId ?? selected);
-              if (suggestion.decision.districtId) setSelected(suggestion.decision.districtId);
-              setPending(MEASURES.find((m) => m.id === suggestion.decision.measureId)!);
-            }
+          storageWarning={storageWarning}
+          onApply={(decision) => {
+            if (!moveIssues(decisions, decision).length) setDecisions([...decisions, decision]);
           }}
           onUndo={() => setDecisions(decisions.slice(0, -1))}
           onReport={() => setView('report')}
@@ -877,133 +790,6 @@ export default function App() {
           </main>
         </>
       )}
-      <dialog ref={dialogRef} onCancel={() => setPending(null)} className="policy-dialog">
-        <button className="close-button" aria-label="Close" onClick={() => setPending(null)}>
-          <X size={20} />
-        </button>
-        {pending && (
-          <>
-            <span className="eyebrow">
-              {CATEGORIES[pending.category].name[lang]} · {pending.id}
-            </span>
-            <h2>{pending.name[lang]}</h2>
-            <p className="muted">{pending.description[lang]}</p>
-            <div className="dialog-price">
-              <span>
-                <Wallet size={18} />
-                <b>{pending.cost}</b> / {100 - result.cost}{' '}
-                {t('доступно', 'available', 'қолжетімді')}
-              </span>
-              <span>
-                <Clock3 size={17} />
-                {pending.lag}{' '}
-                {t('квартала до эффекта', 'quarters until impact', 'тоқсаннан кейін әсер')}
-              </span>
-            </div>
-            {pending.scope === 'district' ? (
-              <fieldset className="target-picker">
-                <legend>
-                  {t('Где реализуем?', 'Where should it happen?', 'Қайда іске асырамыз?')}
-                </legend>
-                {DISTRICTS.map((d) => (
-                  <button
-                    key={d.id}
-                    className={target === d.id ? 'active' : ''}
-                    onClick={() => {
-                      setTarget(d.id);
-                      setSelected(d.id);
-                    }}
-                  >
-                    {d.name[lang]}
-                    {target === d.id && <Check size={14} />}
-                  </button>
-                ))}
-              </fieldset>
-            ) : (
-              <div className="citywide-note">
-                <Globe2 size={18} />
-                {t(
-                  'Эффект получат все пять районов',
-                  'All five districts receive the benefit',
-                  'Барлық бес аудан пайда көреді',
-                )}
-              </div>
-            )}
-            <h3>
-              {t(
-                'Что изменится за два года',
-                'What changes over two years',
-                'Екі жылда не өзгереді',
-              )}
-            </h3>
-            <div className="preview-metrics">
-              {Object.entries(pending.effects).map(([k, v]) => (
-                <div key={k}>
-                  <span>{INDICATORS[k as keyof typeof INDICATORS][lang]}</span>
-                  <b className={v < 0 ? 'negative' : 'positive'}>
-                    {signed((v * (8 - pending.lag)) / 8)}
-                  </b>
-                </div>
-              ))}
-            </div>
-            <small className="muted">
-              {t(
-                `Реализуется ${((8 - pending.lag) / 8) * 100}% полного эффекта с учётом задержки.`,
-                `The delay allows ${((8 - pending.lag) / 8) * 100}% of the full effect to arrive.`,
-                `Кідірісті ескергенде толық әсердің ${((8 - pending.lag) / 8) * 100}%-ы іске асады.`,
-              )}
-            </small>
-            {SYNERGIES.filter((s) => s.pair.some((id) => id === pending.id)).map((s) => {
-              const other = s.pair.find((id) => id !== pending.id)!;
-              return (
-                <div className="combo-note" key={other}>
-                  <Link2 size={17} />
-                  <span>
-                    <b>{s.name[lang]}</b>
-                    <small>
-                      {t('В паре с', 'Pair with', 'Бірге')}{' '}
-                      {MEASURES.find((m) => m.id === other)!.name[lang]} → {s.indicator} +2
-                    </small>
-                  </span>
-                  {decisions.some((d) => d.measureId === other) && <Zap size={19} />}
-                </div>
-              );
-            })}
-            {preview && (
-              <div className="forecast-change">
-                <span>
-                  {t(
-                    'Прогноз Quality of Life',
-                    'Quality of Life forecast',
-                    'Quality of Life болжамы',
-                  )}
-                </span>
-                <strong>
-                  {format(result.score)}
-                  <ArrowRight size={18} />
-                  {format(preview.score)}
-                  <b>{signed(preview.score - result.score)}</b>
-                </strong>
-              </div>
-            )}
-            {issues.map((i) => (
-              <div className="warning" role="alert" key={i.code}>
-                <AlertTriangle size={17} />
-                {issueText(i.code)}
-              </div>
-            ))}
-            <button
-              className="primary commit-button"
-              data-testid="commit-policy"
-              disabled={issues.length > 0}
-              onClick={commit}
-            >
-              {t('Принять решение', 'Adopt policy', 'Шешімді қабылдау')}
-              <ArrowRight size={18} />
-            </button>
-          </>
-        )}
-      </dialog>
       <dialog ref={helpRef} onCancel={() => setHelp(false)} className="help-dialog">
         <button className="close-button" aria-label="Close" onClick={() => setHelp(false)}>
           <X size={20} />

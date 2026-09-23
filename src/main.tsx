@@ -5,6 +5,7 @@ import '@fontsource-variable/manrope';
 import '@fontsource-variable/unbounded';
 import './style.css';
 import './game.css';
+import './experience.css';
 createRoot(document.getElementById('root')!).render(
   <React.StrictMode>
     <App />

@@ -1,0 +1,356 @@
+.mayor-guide-briefing {
+  display: grid;
+  grid-template-columns: minmax(245px, 0.82fr) minmax(0, 1.18fr);
+  min-height: 520px;
+  width: 100%;
+  color: #18344a;
+  background: #fffdf7;
+  overflow: hidden;
+  border-radius: inherit;
+}
+.mayor-guide-portrait {
+  position: relative;
+  min-height: 100%;
+  background: #c3d3c7;
+  overflow: hidden;
+}
+.mayor-guide-portrait img {
+  position: absolute;
+  width: 100%;
+  height: 100%;
+  inset: 0;
+  object-fit: cover;
+  object-position: 50% 35%;
+}
+.mayor-guide-portrait::after {
+  content: '';
+  position: absolute;
+  inset: 48% 0 0;
+  background: linear-gradient(transparent, rgba(14, 40, 54, 0.91));
+}
+.mayor-guide-portrait-caption {
+  position: absolute;
+  left: 25px;
+  bottom: 30px;
+  z-index: 1;
+  display: grid;
+  gap: 6px;
+  color: #fffdf7;
+}
+.mayor-guide-portrait-caption > span {
+  color: #ffdb8a;
+  font-size: 9px;
+  font-weight: 800;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  margin-bottom: 11px;
+}
+.mayor-guide-portrait-caption > strong {
+  font-size: 29px;
+  font-weight: 800;
+  line-height: 1.1;
+}
+.mayor-guide-portrait-caption > small {
+  font-size: 12px;
+}
+.mayor-guide-welcome {
+  padding: 38px 38px 30px;
+}
+.mayor-guide-eyebrow {
+  display: block;
+  font-size: 10px;
+  color: #5a735f;
+  font-weight: 800;
+  text-transform: uppercase;
+  letter-spacing: 0.1em;
+  margin-bottom: 12px;
+}
+.mayor-guide-welcome h2 {
+  font-size: clamp(25px, 3vw, 33px);
+  line-height: 1.14;
+  letter-spacing: -0.055em;
+  margin: 0 0 17px;
+}
+.mayor-guide-introduction {
+  margin: 0;
+  font-size: 13px;
+  line-height: 1.7;
+  color: #53646e;
+}
+.mayor-guide-mandate {
+  margin: 24px 0;
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 20px;
+}
+.mayor-guide-mandate > div {
+  display: grid;
+  gap: 7px;
+}
+.mayor-guide-mandate strong {
+  font-size: 38px;
+  line-height: 1;
+  font-weight: 800;
+  letter-spacing: -0.055em;
+  font-variant-numeric: tabular-nums;
+}
+.mayor-guide-mandate span {
+  font-size: 11px;
+  line-height: 1.5;
+  color: #53646e;
+  max-width: 160px;
+}
+.mayor-guide-path {
+  display: flex;
+  justify-content: space-between;
+  list-style: none;
+  padding: 15px 0 0;
+  margin: 0 0 16px;
+  gap: 10px;
+  border-top: 1px solid #dfe4dd;
+}
+.mayor-guide-path li {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  font-size: 9px;
+  font-weight: 700;
+  line-height: 1.4;
+}
+.mayor-guide-path li > b {
+  width: 21px;
+  height: 21px;
+  flex-shrink: 0;
+  display: grid;
+  place-items: center;
+  border: 1px solid #cfdbd0;
+  border-radius: 50%;
+  background: #f2f5ed;
+  font-size: 9px;
+}
+.mayor-guide-path li > svg {
+  flex-shrink: 0;
+  color: #97a69b;
+  margin-left: 5px;
+}
+.mayor-guide-promise {
+  display: flex;
+  align-items: flex-start;
+  gap: 8px;
+  font-size: 11px;
+  line-height: 1.6;
+  color: #53646e;
+  margin: 0 0 20px;
+}
+.mayor-guide-promise > svg {
+  margin-top: 2px;
+  flex-shrink: 0;
+  color: #497158;
+}
+.mayor-guide-welcome .gold-button {
+  width: 100%;
+}
+.mayor-guide-skip {
+  display: block;
+  background: none;
+  border: none;
+  padding: 12px 0 0;
+  margin: 0 auto;
+  color: #657781;
+  font: inherit;
+  font-size: 11px;
+  cursor: pointer;
+  text-underline-offset: 3px;
+}
+.mayor-guide-skip:hover {
+  color: #18344a;
+  text-decoration: underline;
+}
+.mayor-guide-tip {
+  --guide-ink: #345341;
+  --guide-muted: #58715e;
+  position: relative;
+  display: flex;
+  align-items: flex-start;
+  gap: 9px;
+  padding: 11px 35px 11px 12px;
+  border: 1px solid #d5e1cf;
+  border-radius: 12px;
+  background: #f0f5e9;
+  color: var(--guide-ink);
+  margin: 0 0 12px;
+  text-align: left;
+}
+.mayor-guide-tip-icon {
+  margin-top: 1px;
+  display: grid;
+  place-items: center;
+  flex-shrink: 0;
+  width: 21px;
+  height: 23px;
+}
+.mayor-guide-tip-copy {
+  flex: 1;
+  min-width: 0;
+}
+.mayor-guide-tip-heading {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+.mayor-guide-tip-heading strong {
+  font-size: 11px;
+  line-height: 1.5;
+  font-weight: 800;
+}
+.mayor-guide-tip-step {
+  display: flex;
+  gap: 3px;
+  margin-left: auto;
+  flex-shrink: 0;
+}
+.mayor-guide-tip-step i {
+  display: block;
+  height: 4px;
+  width: 10px;
+  border-radius: 3px;
+  background: #ccd8c6;
+}
+.mayor-guide-tip-step i.is-complete {
+  background: #698663;
+}
+.mayor-guide-tip-copy p {
+  margin: 3px 0 0;
+  color: var(--guide-muted);
+  font-size: 11px;
+  line-height: 1.55;
+}
+.mayor-guide-dismiss {
+  position: absolute;
+  top: 4px;
+  right: 3px;
+  display: grid;
+  place-items: center;
+  width: 30px;
+  height: 30px;
+  padding: 0;
+  border: 0;
+  background: transparent;
+  color: #657e6b;
+  border-radius: 50%;
+  cursor: pointer;
+}
+.mayor-guide-dismiss:hover {
+  background: #dfe9d7;
+  color: #183e24;
+}
+.mayor-guide-dismiss:focus-visible,
+.mayor-guide-skip:focus-visible {
+  outline: 2px solid #375b42;
+  outline-offset: 3px;
+}
+.mayor-guide-tip-result {
+  background: #f3f5f1;
+  border-color: #e0e5dc;
+  margin-top: 13px;
+}
+@media (max-width: 760px) {
+  .mayor-guide-briefing {
+    grid-template-columns: 1fr;
+    min-height: auto;
+    width: 100%;
+    max-height: calc(100dvh - 28px);
+    overflow-y: auto;
+  }
+  .mayor-guide-portrait {
+    min-height: 133px;
+  }
+  .mayor-guide-portrait img {
+    object-position: 50% 31%;
+  }
+  .mayor-guide-portrait::after {
+    inset: 0;
+    background: linear-gradient(90deg, rgba(14, 40, 54, 0.9), rgba(14, 40, 54, 0.1) 70%);
+  }
+  .mayor-guide-portrait-caption {
+    left: 23px;
+    bottom: 20px;
+  }
+  .mayor-guide-portrait-caption > span {
+    margin-bottom: 5px;
+    font-size: 8px;
+  }
+  .mayor-guide-portrait-caption > strong {
+    font-size: 24px;
+  }
+  .mayor-guide-portrait-caption > small {
+    font-size: 10px;
+  }
+  .mayor-guide-welcome {
+    padding: 23px;
+  }
+  .mayor-guide-welcome h2 {
+    font-size: 28px;
+    margin-bottom: 12px;
+  }
+  .mayor-guide-introduction {
+    font-size: 12px;
+    line-height: 1.65;
+  }
+  .mayor-guide-mandate {
+    margin: 19px 0;
+    gap: 15px;
+  }
+  .mayor-guide-mandate strong {
+    font-size: 32px;
+  }
+  .mayor-guide-mandate span {
+    font-size: 10px;
+  }
+  .mayor-guide-path {
+    gap: 5px;
+  }
+  .mayor-guide-path li {
+    font-size: 9px;
+    gap: 4px;
+  }
+  .mayor-guide-path li > svg {
+    display: none;
+  }
+  .mayor-guide-tip {
+    padding: 9px 30px 9px 10px;
+    gap: 6px;
+    border-radius: 10px;
+  }
+  .mayor-guide-tip-icon {
+    display: none;
+  }
+  .mayor-guide-tip-heading strong,
+  .mayor-guide-tip-copy p {
+    font-size: 10px;
+  }
+  .mayor-guide-tip-step {
+    gap: 2px;
+  }
+  .mayor-guide-tip-step i {
+    width: 7px;
+  }
+  .mayor-guide-dismiss {
+    width: 30px;
+    height: 34px;
+  }
+}
+@media (max-height: 680px) and (min-width: 761px) {
+  .mayor-guide-briefing {
+    min-height: auto;
+    max-height: calc(100dvh - 32px);
+    overflow-y: auto;
+  }
+  .mayor-guide-welcome {
+    padding-top: 25px;
+    padding-bottom: 23px;
+  }
+  .mayor-guide-mandate {
+    margin: 18px 0;
+  }
+}
