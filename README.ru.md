@@ -1,7 +1,9 @@
 <div align="center">
 
 # QALA
+
 ### Большой город. Пять решений.
+
 **Пошаговый симулятор Астаны, который работает офлайн.**
 
 [English](README.md) · [Русский](README.ru.md) · [Қазақша](README.kk.md)
@@ -10,7 +12,7 @@
 
 ![QALA — ваш город](docs/screenshots/city-ru.png)
 
-*Sauce Code · HackAlem AI 2026 · «Аким на 5 часов» · Astana Innovations*
+_Sauce Code · HackAlem AI 2026 · «Аким на 5 часов» · Astana Innovations_
 </div>
 
 ## Город — это люди

@@ -12,25 +12,28 @@
     "test:e2e": "playwright test",
     "checkpoint": "node scripts/checkpoint.mjs",
     "start": "node --env-file-if-exists=.env --import tsx server/advisor.ts",
-    "package": "npm run build && node scripts/package.mjs"
+    "package": "npm run build && node scripts/package.mjs",
+    "format": "prettier --write .",
+    "format:check": "prettier --check ."
   },
   "dependencies": {
+    "lucide-react": "^0.468.0",
     "react": "^19.1.0",
     "react-dom": "^19.1.0",
-    "three": "^0.180.0",
-    "lucide-react": "^0.468.0"
+    "three": "^0.180.0"
   },
   "devDependencies": {
+    "@playwright/test": "^1.55.1",
+    "@types/node": "^22.18.0",
     "@types/react": "^19.1.0",
     "@types/react-dom": "^19.1.0",
     "@types/three": "^0.180.0",
+    "@vitejs/plugin-react": "^5.0.3",
+    "prettier": "^3.9.9",
+    "tsx": "^4.20.5",
     "typescript": "^5.9.2",
     "vite": "^7.1.7",
-    "@vitejs/plugin-react": "^5.0.3",
-    "vite-plugin-singlefile": "^2.3.0",
-    "tsx": "^4.20.5",
-    "@playwright/test": "^1.55.1",
-    "@types/node": "^22.18.0"
+    "vite-plugin-singlefile": "^2.3.0"
   },
   "engines": {
     "node": ">=22"

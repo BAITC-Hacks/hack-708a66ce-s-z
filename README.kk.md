@@ -1,7 +1,9 @@
 <div align="center">
 
 # QALA
+
 ### Бір қала. Бес шешім.
+
 **Офлайн жұмыс істейтін Астананы басқарудың кезекпен ойналатын симуляторы.**
 
 [English](README.md) · [Русский](README.ru.md) · [Қазақша](README.kk.md)
@@ -10,7 +12,7 @@
 
 ![QALA қалалық симуляторы](docs/screenshots/city-kk.png)
 
-*Sauce Code · HackAlem AI 2026 · «5 сағатқа әкім» · Astana Innovations*
+_Sauce Code · HackAlem AI 2026 · «5 сағатқа әкім» · Astana Innovations_
 </div>
 
 ## Қала — бұл адамдар

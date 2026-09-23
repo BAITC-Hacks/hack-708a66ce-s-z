@@ -1,0 +1,9 @@
+node_modules
+dist
+play
+package-lock.json
+docs/supplied-dataset.ru.txt
+docs/screenshots
+tmp
+test-results
+playwright-report

@@ -14,7 +14,7 @@
 
 ![QALA city simulator](docs/screenshots/city-en.png)
 
-*HackAlem AI 2026 · “Virtual Mayor for 5 Hours” · Case owner: Astana Innovations*
+_HackAlem AI 2026 · “Virtual Mayor for 5 Hours” · Case owner: Astana Innovations_
 
 </div>
 
@@ -55,17 +55,17 @@ Install the browser once if needed: `npx playwright install chromium`.
 
 ## Make a choice. Understand its cost.
 
-| Feature | Why it matters |
-|---|---|
-| Interactive Three.js city | Five selectable districts, score overlay, visible policy markers, orbit and zoom |
-| Fourteen policy cards | Cost, implementation delay, target, and actual two-year effects before committing |
-| Five-decision game | Budget and conflict checks, undo, and a guard against impossible-to-finish plans |
-| Policy synergies | Bus lanes + signals, lighting + digital requests, cleaner fuel + green belt |
-| Transparent results | Population-weighted score, weakest district, critical penalties, all 50 indicators |
-| Local advisor | Deterministic, explainable advice works offline; legal next moves are ranked by immediate gain |
-| Optional LLM narration | A server passes verified engine output to an LLM for a plain-language explanation |
-| Replay and compare | Save up to ten scenarios in your browser; export the complete calculation as JSON |
-| RU / EN / ҚАЗ | Localized game controls, policy descriptions, help and results |
+| Feature                   | Why it matters                                                                                 |
+| ------------------------- | ---------------------------------------------------------------------------------------------- |
+| Interactive Three.js city | Five selectable districts, score overlay, visible policy markers, orbit and zoom               |
+| Fourteen policy cards     | Cost, implementation delay, target, and actual two-year effects before committing              |
+| Five-decision game        | Budget and conflict checks, undo, and a guard against impossible-to-finish plans               |
+| Policy synergies          | Bus lanes + signals, lighting + digital requests, cleaner fuel + green belt                    |
+| Transparent results       | Population-weighted score, weakest district, critical penalties, all 50 indicators             |
+| Local advisor             | Deterministic, explainable advice works offline; legal next moves are ranked by immediate gain |
+| Optional LLM narration    | A server passes verified engine output to an LLM for a plain-language explanation              |
+| Replay and compare        | Save up to ten scenarios in your browser; export the complete calculation as JSON              |
+| RU / EN / ҚАЗ             | Localized game controls, policy descriptions, help and results                                 |
 
 ![Policy preview with consequences](docs/screenshots/policy-preview.png)
 
@@ -99,15 +99,15 @@ Policy cards → validator → deterministic simulation → result + explanation
 
 **React + TypeScript + Vite + Three.js.** No database or runtime CDN. Lucide icons and original generated Astana key art are bundled locally. Vite’s single-file build makes the game portable.
 
-| Location | Responsibility |
-|---|---|
-| `src/game/data.ts` | Supplied district values, weights, policies, translations and synergies |
-| `src/game/engine.ts` | Validation, simulation, completion search, recommendations and contributions |
-| `src/game/explanation.ts` | Verified explanation context; no model-owned numbers |
-| `src/components/CityMap.tsx` | Three.js scene, picking, effects, cleanup and illustrated fallback |
-| `src/App.tsx` | Card game, previews, reports, language selection and local scenario archive |
-| `server/advisor.ts` | Optional local OpenAI Responses API adapter; recomputes all input server-side |
-| `tests/` | Scoring invariants, official example, permutations, seeded runs and browser journeys |
+| Location                     | Responsibility                                                                       |
+| ---------------------------- | ------------------------------------------------------------------------------------ |
+| `src/game/data.ts`           | Supplied district values, weights, policies, translations and synergies              |
+| `src/game/engine.ts`         | Validation, simulation, completion search, recommendations and contributions         |
+| `src/game/explanation.ts`    | Verified explanation context; no model-owned numbers                                 |
+| `src/components/CityMap.tsx` | Three.js scene, picking, effects, cleanup and illustrated fallback                   |
+| `src/App.tsx`                | Card game, previews, reports, language selection and local scenario archive          |
+| `server/advisor.ts`          | Optional local OpenAI Responses API adapter; recomputes all input server-side        |
+| `tests/`                     | Scoring invariants, official example, permutations, seeded runs and browser journeys |
 
 ### Optional real LLM explanation
 
