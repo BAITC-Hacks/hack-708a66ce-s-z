@@ -50,13 +50,21 @@ Baseline is a reference/forecast, not a valid submitted five-decision scenario. 
 
 - A completion-existence search blocks partial choices from which no valid fifth decision is reachable. This only removes dead ends; it does not change legal final scenarios.
 - Recommendations rank legal next actions by immediate score gain and check that the game can still finish. They do not guarantee a global optimum.
-- Category bars within the district panel use the corresponding indicator weights, normalized within each category.
-- Marginal contribution is `score(all) - score(all except policy)`. These values are explicitly non-additive because the score includes a minimum, thresholds and policy synergies.
+- District details expose all ten raw indicators (0–100 scores, not percentages of residents), before/after meters, the strict threshold 40 and the supplied population share. The problem chart shows the sum of deficits `max(0, 40 − indicator)` for each indicator across all districts; the actual penalty still counts critical pairs, not deficit size.
+- The visible report uses exact Shapley attribution over all subsets of at most five decisions. These contributions sum to `score(all) − baseline.score` before rounding, sharing threshold and synergy interactions. The legacy v1 exported marginal contribution is `score(all) - score(all except policy)`. These values are explicitly non-additive because the score includes a minimum, thresholds and policy synergies.
 - A partial scenario is only a forecast. `finalResult` returns `null` for any invalid complete set.
+
+## Optional exploration
+
+A cancellable, deterministic beam search retains up to 180 intermediate states per decision depth. It fixes already funded decisions, deduplicates canonical sets, and evaluates complete candidates with the official engine. A greedy completion is retained as a quality floor. This yields the best found plan, not a proof of global optimality. No search result is adopted automatically.
+
+The separate scenario lab supports budget 1–1,000 and 1–10 decisions, plus up to 30 user measures. Each custom measure has an ID beginning `C-`, cost 1–1,000, integer lag 0–7, category, scope and finite effects between −100 and 100. All-zero effects are rejected. Official effects, synergies, conflicts, category limits and clipping remain the same. Defaults reproduce the official engine. Experimental records never enter official game storage, archives or AI requests.
+
+If only the budget/count rules are violated, the lab still shows a forecast and explicit issues. Structural invalidity produces no calculation. A valid final sandbox result requires the chosen decision count and all constraints, and is labeled separately from the official score. Custom assumptions do not become authoritative dataset values.
 
 ## Explainability and AI
 
-The deterministic local report states the city average, weakest district, critical pairs, lag effects, synergies and marginal contributions. It is available without network access and is labeled local analysis.
+The deterministic local report states the city average, weakest district, critical pairs, lag effects, synergies and exact Shapley contributions in the visible report; exported v1 marginal values retain their original definition. It is available without network access and is labeled local analysis.
 
 An optional LLM server uses the same engine to reconstruct all numbers from measure IDs and targets; user-supplied score fields are ignored. The response is presentation text only and cannot update game state. The provider is asked to quote supplied values, not compute new numbers. This is a grounding instruction, not a mathematical guarantee against generated text errors; the engine report remains authoritative.
 

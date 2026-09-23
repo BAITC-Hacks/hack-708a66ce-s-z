@@ -35,6 +35,8 @@ import {
   Flag,
   Search,
   Settings2,
+  Pencil,
+  FlaskConical,
 } from 'lucide-react';
 import {
   DISTRICTS,
@@ -74,6 +76,8 @@ import art from '../assets/astana-key-art.png';
 import advisorArt from '../assets/advisor-aida.png';
 import { IsoCityPolicyArt } from './IsoCityPolicyArt';
 import { AdvisorConnection } from './AdvisorConnection';
+import { DistrictStatistics } from './CityAnalytics';
+import { PlanSearch } from './PlanSearch';
 const ICONS = {
   transport: Bus,
   ecology: Leaf,
@@ -99,6 +103,7 @@ interface Props {
   onApply: (d: Decision) => void;
   onUndo: () => void;
   onReport: () => void;
+  onSandbox: () => void;
   onArchive: () => void;
   onHelp: () => void;
   onReset: () => void;
@@ -464,7 +469,24 @@ export function MayorExperience(p: Props) {
               <small>{t('Бюджет', 'Budget', 'Бюджет')}</small>
               <b data-testid="budget">
                 {100 - result.cost}
-                <em>/100</em>
+                <button
+                  className="budget-lab-link"
+                  data-testid="open-scenario-lab"
+                  onClick={p.onSandbox}
+                  aria-label={t(
+                    'Открыть лабораторию сценариев',
+                    'Open scenario laboratory',
+                    'Сценарий зертханасын ашу',
+                  )}
+                  title={t(
+                    'Изменить бюджет и правила в отдельном эксперименте',
+                    'Change budget and rules in a separate experiment',
+                    'Бюджет пен ережелерді бөлек тәжірибеде өзгерту',
+                  )}
+                >
+                  <em>/100</em>
+                  <Pencil size={11} />
+                </button>
               </b>
             </span>
           </div>
@@ -532,6 +554,26 @@ export function MayorExperience(p: Props) {
             </select>
             <ChevronDown size={13} />
           </div>
+          <div className="brief-district-meta">
+            <span>
+              <Users size={11} />
+              {Math.round(district.pop * 100)}% {t('жителей', 'population', 'халық')}
+            </span>
+            <b
+              className={
+                result.districtScores[selected] < BASELINE.districtScores[selected]
+                  ? 'is-negative'
+                  : ''
+              }
+              title={t(
+                'Изменение балла района',
+                'District score change',
+                'Аудан ұпайының өзгерісі',
+              )}
+            >
+              {signed(result.districtScores[selected] - BASELINE.districtScores[selected])}
+            </b>
+          </div>
           <h1>{district.profile[lang]}</h1>
           <div className="brief-needs">
             {needs.map((k) => (
@@ -558,7 +600,7 @@ export function MayorExperience(p: Props) {
                 )}
           </p>
           <button className="brief-link" onClick={() => openLayer('district')}>
-            {t('Узнать район', 'Meet the district', 'Ауданды таныңыз')}
+            {t('Показатели района', 'Meet the district', 'Аудан көрсеткіштері')}
             <ArrowUpRight size={15} />
           </button>
         </section>
@@ -967,6 +1009,26 @@ export function MayorExperience(p: Props) {
                   <ChevronRight />
                 </button>
               </div>
+              <button
+                className="desk-laboratory"
+                onClick={() => {
+                  setLayer(null);
+                  p.onSandbox();
+                }}
+              >
+                <FlaskConical size={20} />
+                <span>
+                  <b>{t('Лаборатория сценариев', 'Scenario laboratory', 'Сценарий зертханасы')}</b>
+                  <small>
+                    {t(
+                      'Бюджет, число решений и свои меры · отдельно от игры',
+                      'Budget, decision limit and custom policies · separate from your game',
+                      'Бюджет, шешім саны мен өз шараларыңыз · ойыннан бөлек',
+                    )}
+                  </small>
+                </span>
+                <ArrowUpRight size={17} />
+              </button>
               <div className="desk-secondary">
                 <button
                   onClick={() => {
@@ -1062,34 +1124,23 @@ export function MayorExperience(p: Props) {
           )}
           {layer === 'district' && (
             <>
-              <h2>{district.name[lang]}</h2>
-              <p>
-                {district.profile[lang]} · {Math.round(district.pop * 100)}%{' '}
-                {t('населения модели', 'of model population', 'модельдегі халық')}
-              </p>
-              <div className="district-total">
-                <span>{t('Качество жизни', 'Quality of life', 'Өмір сапасы')}</span>
-                <b>{result.districtScores[selected].toFixed(1)}</b>
-                <small>
-                  {signed(result.districtScores[selected] - BASELINE.districtScores[selected])}
-                </small>
-              </div>
-              {Object.entries(CATEGORIES).map(([id, c]) => (
-                <section className="district-metrics" key={id}>
-                  <h3>{c.name[lang]}</h3>
-                  {c.keys.map((k) => (
-                    <div key={k}>
-                      <span>{INDICATORS[k][lang]}</span>
-                      <b className={result.metrics[selected][k] < 40 ? 'urgent' : ''}>
-                        {result.metrics[selected][k].toFixed(1)}
-                      </b>
-                      <i>
-                        <em style={{ width: `${result.metrics[selected][k]}%` }} />
-                      </i>
-                    </div>
-                  ))}
-                </section>
-              ))}
+              <DistrictStatistics
+                lang={lang}
+                result={result}
+                selected={selected}
+                onSelect={select}
+              />
+              <button
+                className="district-city-analytics"
+                onClick={() => {
+                  setLayer(null);
+                  p.onReport();
+                }}
+              >
+                <ChartNoAxesCombined size={17} />
+                {t('Сравнить все районы', 'Compare all districts', 'Барлық аудандарды салыстыру')}
+                <ArrowUpRight size={15} />
+              </button>
               <button className="gold-button" onClick={() => setLayer('catalog')}>
                 {t('Найти решение', 'Find a policy', 'Шешім табу')}
                 <ArrowRight size={16} />
@@ -1275,6 +1326,16 @@ export function MayorExperience(p: Props) {
                   </button>
                 ))}
               </section>
+              <PlanSearch
+                lang={lang}
+                decisions={decisions}
+                onPreview={(decision) =>
+                  openPolicy(
+                    MEASURES.find((m) => m.id === decision.measureId)!,
+                    decision.districtId,
+                  )
+                }
+              />
             </>
           )}
           {layer === 'journal' && (

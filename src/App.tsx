@@ -5,7 +5,6 @@ import {
   Building2,
   Bus,
   Check,
-  ChevronDown,
   CircleHelp,
   Download,
   Globe2,
@@ -31,17 +30,14 @@ import {
   CATEGORIES,
   DISTRICTS,
   INDICATORS,
-  KEYS,
   MEASURES,
   SYNERGIES,
-  WEIGHTS,
   type DistrictId,
   type Lang,
   type Measure,
 } from './game/data';
 import {
   BASELINE,
-  contributions,
   moveIssues,
   recommend,
   simulate,
@@ -50,6 +46,9 @@ import {
 } from './game/engine';
 import { readDecisions, readRuns, save, SAVE_KEY, type SavedRun } from './game/storage';
 import { MayorExperience } from './components/MayorExperience';
+import { ScenarioLab } from './components/ScenarioLab';
+import { CityAnalytics } from './components/CityAnalytics';
+import { shapleyContributions } from './game/planSearch';
 import { scenarioDocument } from './game/decisionSupport';
 import keyArt from './assets/astana-key-art.png';
 
@@ -75,7 +74,7 @@ export default function App() {
   const [lang, setLang] = useState<Lang>(initialLang),
     [decisions, setDecisions] = useState<Decision[]>(readDecisions),
     [selected, setSelected] = useState<DistrictId>('nura'),
-    [view, setView] = useState<'city' | 'report' | 'archive'>('city'),
+    [view, setView] = useState<'city' | 'report' | 'archive' | 'lab'>('city'),
     [help, setHelp] = useState(false),
     [runs, setRuns] = useState<SavedRun[]>(readRuns),
     [toast, setToast] = useState(''),
@@ -216,11 +215,15 @@ export default function App() {
           onUndo={() => setDecisions(decisions.slice(0, -1))}
           onReport={() => setView('report')}
           onArchive={() => setView('archive')}
+          onSandbox={() => setView('lab')}
           onHelp={() => setHelp(true)}
           onReset={() => setResetConfirm(true)}
         />
       )}
-      {view !== 'city' && (
+      {view === 'lab' && (
+        <ScenarioLab lang={lang} initialDecisions={decisions} onClose={() => setView('city')} />
+      )}
+      {view !== 'city' && view !== 'lab' && (
         <>
           <header className="topbar">
             <a
@@ -471,87 +474,13 @@ export default function App() {
                     )}
                   />
                 </div>
-                <div className="report-stats">
-                  <article>
-                    <small>
-                      {t('ГОРОД В ЦЕЛОМ · 70%', 'CITY AVERAGE · 70%', 'ЖАЛПЫ ҚАЛА · 70%')}
-                    </small>
-                    <strong>{format(result.average)}</strong>
-                    <p>
-                      {t(
-                        'С учётом доли населения каждого района',
-                        'Weighted by each district’s population share',
-                        'Әр аудан халқының үлесі ескерілген',
-                      )}
-                    </p>
-                  </article>
-                  <article>
-                    <small>
-                      {t('СЛАБЕЙШИЙ РАЙОН · 30%', 'WEAKEST DISTRICT · 30%', 'ЕҢ ӘЛСІЗ АУДАН · 30%')}
-                    </small>
-                    <strong>{format(result.districtScores[result.weakest])}</strong>
-                    <p>
-                      {districtName(result.weakest)} ·{' '}
-                      {t(
-                        'Никого не оставляем позади',
-                        'Leave no neighborhood behind',
-                        'Ешбір аудан назардан тыс қалмайды',
-                      )}
-                    </p>
-                  </article>
-                  <article>
-                    <small>
-                      {t('КРИТИЧЕСКИЕ ПОКАЗАТЕЛИ', 'CRITICAL INDICATORS', 'СЫНДАРЛЫ КӨРСЕТКІШТЕР')}
-                    </small>
-                    <strong>
-                      {result.critical.length}
-                      <span>
-                        {' '}
-                        / {BASELINE.critical.length} {t('в начале', 'at start', 'бастапқыда')}
-                      </span>
-                    </strong>
-                    <p>
-                      {t(
-                        '−1 балл за каждый показатель ниже 40',
-                        '−1 point for each indicator below 40',
-                        '40-тан төмен әр көрсеткішке −1 балл',
-                      )}
-                    </p>
-                  </article>
-                </div>
-                <div className="report-columns">
-                  <section className="report-panel">
-                    <h2>
-                      {t('Изменения в районах', 'Neighborhood impact', 'Аудандардағы өзгерістер')}
-                    </h2>
-                    {DISTRICTS.map((d) => (
-                      <div className="district-result" key={d.id}>
-                        <div>
-                          <b>{d.name[lang]}</b>
-                          <small>
-                            {Math.round(d.pop * 100)}% {t('населения', 'of residents', 'тұрғын')}
-                          </small>
-                        </div>
-                        <div className="comparison-bar">
-                          <span style={{ width: `${result.districtScores[d.id]}%` }} />
-                          <i style={{ left: `${BASELINE.districtScores[d.id]}%` }} />
-                        </div>
-                        <span>
-                          {format(result.districtScores[d.id])}
-                          <b>
-                            {signed(result.districtScores[d.id] - BASELINE.districtScores[d.id])}
-                          </b>
-                        </span>
-                      </div>
-                    ))}
-                    <small>
-                      {t(
-                        'Вертикальная отметка — до ваших решений',
-                        'Vertical mark = before your decisions',
-                        'Тік белгі — шешімдеріңізге дейін',
-                      )}
-                    </small>
-                  </section>
+                <CityAnalytics
+                  lang={lang}
+                  result={result}
+                  selected={selected}
+                  onSelect={setSelected}
+                />
+                <div>
                   <section className="report-panel explanation">
                     <h2>
                       <Sparkles size={21} />
@@ -620,13 +549,13 @@ export default function App() {
                   </h2>
                   <p className="muted">
                     {t(
-                      'Вклад = разница Score с мерой и без неё. Эти вклады не суммируются: синергии и штрафы нелинейны.',
-                      'Contribution = score with the policy minus score without it. Contributions are not additive: synergies and penalties interact.',
-                      'Үлес = шарамен және шарасыз балл айырмасы. Синергия мен айыптар әсерлесетіндіктен, үлестер қосылмайды.',
+                      'Вклад Шепли — средняя польза меры при всех порядках добавления. Синергии и снятые штрафы распределяются между мерами; сумма вкладов равна общему изменению Score (до округления).',
+                      'Shapley contribution averages a policy’s benefit across every order of adoption. Synergies and removed penalties are shared between policies; contributions sum to the total Score change before rounding.',
+                      'Шепли үлесі — шараны қосудың барлық реттері бойынша орташа пайдасы. Синергия мен жойылған айыптар шараларға бөлінеді; үлестердің қосындысы дөңгелектеуге дейін жалпы Score өзгерісіне тең.',
                     )}
                   </p>
                   <div className="contribution-list">
-                    {contributions(decisions).map(({ decision: d, gain }) => (
+                    {shapleyContributions(decisions).map(({ decision: d, gain }) => (
                       <div key={d.measureId}>
                         <span>
                           <b>{MEASURES.find((m) => m.id === d.measureId)!.name[lang]}</b>
@@ -643,59 +572,6 @@ export default function App() {
                     ))}
                   </div>
                 </section>
-                <details className="report-panel methodology">
-                  <summary>
-                    {t(
-                      'Открытая математика и все показатели',
-                      'Open math & all indicators',
-                      'Ашық математика және барлық көрсеткіштер',
-                    )}
-                    <ChevronDown size={18} />
-                  </summary>
-                  <p>
-                    Score = 0.7 × {format(result.average)} + 0.3 ×{' '}
-                    {format(result.districtScores[result.weakest])} − {result.critical.length} ={' '}
-                    <b>{format(result.score)}</b>
-                  </p>
-                  <p>
-                    {t(
-                      'Каждый эффект × (8 − лаг) / 8. Синергии +2 без задержки. Ограничение показателей: 0–100. Порядок решений не влияет на результат.',
-                      'Each effect × (8 − lag) / 8. Synergies add 2 without delay scaling. Indicators are clamped to 0–100. Decision order does not change the result.',
-                      'Әр әсер × (8 − кідіріс) / 8. Синергия кідіріссіз +2 қосады. Көрсеткіштер 0–100 аралығында. Шешімдер реті нәтижеге әсер етпейді.',
-                    )}
-                  </p>
-                  <div className="table-scroll">
-                    <table>
-                      <thead>
-                        <tr>
-                          <th>{t('Показатель', 'Indicator', 'Көрсеткіш')}</th>
-                          <th>{t('Вес', 'Weight', 'Салмақ')}</th>
-                          {DISTRICTS.map((d) => (
-                            <th key={d.id}>{d.name[lang]}</th>
-                          ))}
-                        </tr>
-                      </thead>
-                      <tbody>
-                        {KEYS.map((k) => (
-                          <tr key={k}>
-                            <th>
-                              {k} · {INDICATORS[k][lang]}
-                            </th>
-                            <td>{WEIGHTS[k]}</td>
-                            {DISTRICTS.map((d) => (
-                              <td
-                                key={d.id}
-                                className={result.metrics[d.id][k] < 40 ? 'negative' : ''}
-                              >
-                                {format(result.metrics[d.id][k])}
-                              </td>
-                            ))}
-                          </tr>
-                        ))}
-                      </tbody>
-                    </table>
-                  </div>
-                </details>
               </section>
             )}
             {view === 'archive' && (

@@ -27,6 +27,7 @@ if (changed) {
     'AGENTS.md',
     'README.md',
     'README.ru.md',
+    'README.en.md',
     'README.kk.md',
     'THIRD-PARTY-NOTICES.md',
     'package.json',

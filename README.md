@@ -2,164 +2,173 @@
 
 # QALA
 
-### A city game that shows its work.
+### Большой город. Пять решений.
 
-**Become Astana’s mayor. Make five decisions. See who benefits.**
+**Пошаговый симулятор Астаны, который работает офлайн.**
 
-[English](README.md) · [Русский](README.ru.md) · [Қазақша](README.kk.md)
+[Русский](README.md) · [English](README.en.md) · [Қазақша](README.kk.md)
 
-[**Play offline**](play/QALA.html) · [**Run locally**](#run-from-source) · [**Agent guide**](AGENTS.md) · [**Two-minute demo**](docs/DEMO.md)
+[**Играть офлайн**](play/QALA.html) · [**Запустить проект**](#начните-за-30-секунд) · [**Инструкция для агента**](AGENTS.md) · [**Демо за две минуты**](docs/DEMO.md)
 
-**100 budget · 5 decisions · 14 policies · 3 languages · One portable HTML**
+**100 единиц бюджета · 5 решений · 5 районов · 14 мер · 3 языка**
 
-![QALA — a living Astana and your next decision](docs/screenshots/city-en.png)
+![QALA — ваш город](docs/screenshots/city-ru.png)
 
-_Sauce Code · HackAlem AI 2026 · “Virtual Mayor for 5 Hours” · Astana Innovations_
-
+_Sauce Code · HackAlem AI 2026 · «Аким на 5 часов» · Astana Innovations_
 </div>
 
-A park sounds like an easy win. Until the same site is needed for a school, the growing district needs a clinic, and your budget has to cover five decisions.
+## Город — это люди
 
-QALA makes that tradeoff playable. Explore an illustrative Astana, read a district’s needs, preview a policy and decide where it belongs. Your city changes; the report explains every point of its **Astana Quality of Life Score**.
+Построить парк кажется простым решением. Пока не выясняется, что тот же участок нужен школе, новому району не хватает поликлиники, а бюджета должно хватить на пять решений.
 
-## Play now
+QALA превращает таблицу городских показателей в понятную стратегическую игру. Изучайте районы, выбирайте карточки проектов и заранее смотрите последствия. В конце получите **Astana Quality of Life Score** с разбором до каждого показателя.
 
-1. Download [**play/QALA.html**](play/QALA.html) with GitHub’s **Download raw file** button, or download the repository ZIP.
-2. Open the HTML in a modern desktop browser.
-3. Choose RU, EN or ҚАЗ and meet Aida, your mayoral advisor.
+От Civilization — исследование районов. От Balatro — карточки и синергии. От Plague Inc — наглядные последствия. Математика соответствует выданному датасету.
 
-**No account, installation, server or API key is needed.** JavaScript, fonts, artwork and data are embedded in the file. It works on its first launch without internet, even without WebGL. Your browser can save the current term; JSON export gives you a portable record.
+## Начните за 30 секунд
 
-## Run from source
+1. Скачайте [play/QALA.html](play/QALA.html) кнопкой **Download raw file** на GitHub или скачайте ZIP репозитория.
+2. Откройте файл в современном браузере. Установка, интернет, аккаунт и API-ключ не нужны.
+3. Познакомьтесь с Айдой, выберите район, изучите прогноз и примите первое решение. Русский язык включён по умолчанию; EN и ҚАЗ доступны в игре.
 
-Use **Node.js 22.18+** and npm, in the repository root:
+Код, Canvas-рендерер, стили, данные и изображение включены в один HTML. Офлайн работает даже при первом открытии. Город использует Canvas и не требует WebGL. Текущая партия сохраняется в браузере, если его настройки разрешают; результат можно экспортировать в JSON.
+
+Для разработки нужен Node.js 22.18+:
 
 ```bash
 npm ci
 npm run demo
 ```
 
-Open **http://localhost:8789**. This command builds the game and starts the local server, including optional AI support. No `.env` is required. Keep the terminal running; stop with Ctrl+C.
+```bash
+npm run check       # Тесты, TypeScript и сборка
+npm run test:e2e    # Браузерные сценарии, офлайн и мобильная версия
+npm run package    # Готовый play/QALA.html
+```
 
-For hot reload: `npm run dev`, then open the URL Vite prints. Run `npm start` separately on port 8789 if you also want AI during development.
+При необходимости установите тестовый браузер: `npx playwright install chromium`. Интернет нужен для установки зависимостей, но не для готовой игры.
 
-**Working with a coding agent?** Give it [AGENTS.md](AGENTS.md). It contains exact commands, file boundaries, test oracles, credential handling and verification steps. The [runbook](docs/RUNBOOK.md) includes a ready-to-paste agent prompt and troubleshooting.
+Откройте **http://localhost:8789**. `demo` собирает игру и запускает локальный сервер с опциональным AI. `.env` не обязателен. Для разработки с горячим обновлением используйте `npm run dev` и адрес из терминала.
 
-## Your first term
+**Для coding agent:** начните с [AGENTS.md](AGENTS.md). Там команды запуска, проверочные значения, границы модулей и работа с ключами. [Пошаговый запуск и диагностика](docs/RUNBOOK.md).
 
-| Step        | What you do                                                     | What you learn                                               |
-| ----------- | --------------------------------------------------------------- | ------------------------------------------------------------ |
-| **Explore** | Read a district need and Aida’s visible suggestion              | Where the city starts and who is underserved                 |
-| **Preview** | Compare a policy’s cost, delay, location and calculated effects | What changes before spending anything                        |
-| **Fund**    | Commit deliberately; watch the project appear in the city       | What the budget bought and which indicators improved         |
-| **Reflect** | Undo if needed, finish five choices and inspect the report      | How the plan affects the weakest district and the whole city |
+## Что умеет QALA
 
-![An unfunded school preview and its computed consequences](docs/screenshots/policy-preview.png)
+- Изометрическая сцена на основе IsoCity: пять районов из датасета, шесть узнаваемых зданий Астаны, движение машин, автобусов и пешеходов, масштабирование, день/ночь и видимые изменения после решений.
+- Обучение с Айдой прямо в первом ходе: выбрать потребность → проверить прогноз → принять решение → понять результат. Можно пропустить или пройти заново.
+- На основном экране — город, три варианта и компактная подсказка Айды с переходом к прогнозу. Книга, история и настройки собраны в «Кабинете мэра».
+- Достижения за устранение критических проблем, синергию и улучшение всех районов; скрытых бонусов к баллу нет.
+- Книга мэра: восемь оригинальных советов, связанных с игровыми мерами.
+- Четырнадцать карточек с ценой, задержкой, эффектом за два года и выбором района.
+- Пять ходов, контроль бюджета, запрет конфликтов, отмена последнего решения и защита от невозможности завершить партию.
+- Три синергии: полосы + светофоры, освещение + обращения, чистое топливо + зелёный пояс.
+- Прозрачный отчёт: средний балл, слабейший район, штрафы, все 50 показателей и вклад каждой меры.
+- Локальный советник, сохранение до десяти сценариев, сравнение и экспорт JSON.
+- Русский, английский и казахский интерфейсы; опциональное объяснение от LLM.
 
-Three relevant cards keep each turn manageable; all fourteen policies remain available. The main screen offers a compact advisor, budget, progress and your next decision. The Mayor’s desk holds the handbook, journal, saved scenarios and preferences. Guidance can be skipped or replayed.
+## От живого города к обоснованному решению
 
-## A more recognizable Astana
+| Инструмент              | Что он даёт мэру                                                                      |
+| ----------------------- | ------------------------------------------------------------------------------------- |
+| **Паспорт района**      | Доля населения, все 10 показателей до и после, критический порог 40                   |
+| **График проблем**      | Видно, какой дефицит по показателям до порога 40 остался и какой удалось закрыть      |
+| **Сравнение и матрица** | Изменения пяти районов и все 50 показателей рядом, без скрытых агрегатов              |
+| **Вклад каждой меры**   | Точное распределение Шепли: вклады складываются в общее изменение Score до округления |
+| **Поиск плана**         | Советник перебирает допустимые продолжения и предлагает лучший найденный вариант      |
+| **Открытая модель**     | Текущие слагаемые формулы, веса, лаги, доли населения, синергии и ограничения         |
 
-The Ishim, broad boulevards and the **Khan Shatyr → Baiterek → Aq Orda** civic axis organize the scene. The Palace of Peace and Reconciliation and Hazret Sultan Mosque sit across the river; Nur Alem anchors the EXPO area. Different neighborhoods use different building mixes, heights, courts, gardens and open spaces.
+Поиск сохраняет уже принятые решения, на каждом шаге удерживает до 180 промежуточных планов и показывает число проверенных вариантов. Найденную меру можно сначала рассмотреть. Программа не расходует бюджет автоматически и не объявляет результат доказанным глобальным оптимумом.
 
-QALA adapts the actual building artwork, road renderer, cars and pedestrians from **[IsoCity](https://github.com/amilich/isometric-city)**. Local assets, cached Canvas layers, map gestures, daylight/evening, pause and reduced motion keep the city portable. New projects occupy neighborhood lots; undo restores the previous scene.
+### Лаборатория сценариев
 
-This is an artistic layout with geographic reference points. The five playable districts and every numeric effect come from the supplied synthetic dataset. [Geographic references](docs/ASTANA-MAP.md) · [Upstream source and MIT attribution](docs/ISOCITY.md)
+Откройте **Кабинет мэра → Лаборатория сценариев** или значок изменения лимита у бюджета. Здесь можно изменить бюджет **от 1 до 1 000**, число решений **от 1 до 10** и добавить собственную проблему с мерой: описание, цена, задержка, районный или городской охват, положительные и отрицательные эффекты.
 
-## Meet your advisor
+Статистика районов, график проблем, матрица и формула пересчитываются вместе. Если уменьшить лимит ниже уже потраченного, прогноз остаётся виден, а нарушение правил объясняется. Эксперимент хранится отдельно и экспортируется как **песочница**.
 
-![Aida introduces your first term](docs/screenshots/briefing-en.png)
+Конкурсная партия сохраняет **100 единиц и ровно пять решений**. Лаборатория не меняет её сохранение, архив или официальный AI-контракт. Эффекты собственной меры — допущения автора, а не подтверждённые городские данные. Идеи аналитики и экспериментов перенесены из прототипа коллеги `akim_5_hr`; [что и почему интегрировано](docs/TEAM-INTEGRATION.md).
 
-Aida’s suggestion is visible on the city screen. Open it to preview a legal move, compare alternatives or request a fuller explanation. Nothing is funded automatically.
+![Аналитика районов и открытый расчёт](docs/screenshots/analytics-ru.png)
 
-| Mode               | Available when              | Responsibility                                                 |
-| ------------------ | --------------------------- | -------------------------------------------------------------- |
-| **Local analysis** | Always, including offline   | Ranks legal, finishable next moves against your goal           |
-| **Jev selection**  | A Typesafe key is connected | Chooses a typed candidate from engine-calculated legal options |
-| **AI explanation** | An OpenAI key is connected  | Explains computed benefits, tradeoffs and uncertainty          |
+<details>
+<summary>Посмотреть матрицу и расчётную модель</summary>
 
-In the localhost app, onboarding offers an **optional API-key connection**. You can also connect from the advisor later. Session keys stay in local server memory and are cleared on disconnect or restart. Connecting does not call a paid model; asking for AI advice does. The offline HTML continues with clearly labeled local analysis.
+![Матрица показателей: до и после](docs/screenshots/matrix-ru.png)
 
-Developers can instead use an ignored `.env`:
+![Откуда берётся балл](docs/screenshots/model-ru.png)
+
+</details>
+
+## Астана, которую узнаёшь
+
+Используются реальные модули отрисовки и графические ресурсы [IsoCity](https://github.com/amilich/isometric-city) под MIT. Все нужные файлы включены в офлайн-сборку, авторство сохранено. Ось Хан Шатыр — Бәйтерек — Ақорда и переход через Есиль к Пирамиде помогают узнать город. [Интеграция и лицензия](docs/ISOCITY.md) · [Географические ориентиры](docs/ASTANA-MAP.md).
+
+Бәйтерек, Ақорда, Хан Шатыр, мечеть Әзірет Сұлтан, Дворец мира и согласия и Нұр Әлем нарисованы как отдельные игровые спрайты. Застройка различается по кварталам: старый город, современная левая сторона, набережные, дворы и район EXPO. Машины, автобусы и пешеходы используют единый визуальный стиль и движутся по связанным улицам и тротуарам. Набережные, мосты, жилые дворы и площади формируют город. Новые здания занимают участки района; отмена восстанавливает прежнюю застройку. Визуальные эффекты иллюстрируют решения, а расчёт остаётся воспроизводимым.
+
+![Знакомство с советником](docs/screenshots/briefing-en.png)
+
+Советы в книге мэра — оригинальные тексты QALA по темам «100 советов мэру» Ильи Варламова и Максима Каца (2020). Предоставленный фрагмент содержит вступление и оглавление, а не полные главы. PDF книги не публикуется в репозитории.
+
+![Книга мэра](docs/screenshots/handbook-en.png)
+
+## Правила без скрытой магии
+
+У всех **100 единиц** бюджета и одинаковые синтетические данные. Нужно **ровно пять уникальных мер**, не более двух в одном направлении. Районная мера требует район; городская действует везде. Несовместимости проверяются автоматически. Остаток бюджета не даёт бонуса.
+
+Каждый ход — выбор, а не прошедший квартал. Горизонт всех мер — восемь кварталов, поэтому порядок решений не меняет результат.
+
+```text
+Показатель = clip(база + Σ эффект × (8 − лаг) / 8 + синергии, 0, 100)
+Район      = Σ вес показателя × показатель
+Город      = Σ доля населения × балл района
+Score      = 0.7 × город + 0.3 × слабейший район − критические показатели
+```
+
+Критический показатель — строго ниже 40. Бонусы синергии фиксированы и не уменьшаются из-за лага. Невалидный набор не получает итоговый Score; до пяти решений показывается только прогноз.
+
+База: **52.55768**. Пример организаторов (`M7 Нура, M8 Нура, M10 Нура, M12 город, M5 Сарыарка`) стоит **95** и даёт **56.54307**. Числа вычисляются из исходных показателей, а не подставляются.
+
+## Как устроен проект и где AI
+
+**React + TypeScript + Vite + IsoCity Canvas.** Чистый модуль `src/game/engine.ts` валидирует решения и считает все числа. Интерфейс и карта читают его результат. База данных и CDN не нужны; сборка упаковывает приложение в один HTML.
+
+**Офлайн-советник использует правила, а не LLM.** Он объясняет критические показатели и предлагает допустимый следующий ход по немедленному приросту Score. Это не доказанный глобальный оптимум.
+
+В обучении и панели советника можно опционально подключить API-ключ. Ключ сессии хранится только в памяти локального сервера до отключения или перезапуска; он не попадает в хранилище браузера, JSON или HTML. Подключение само по себе не вызывает платную модель. В офлайн-файле остаётся локальный анализ.
+
+Разработчики могут использовать `.env` для подключения Jev и LLM:
 
 ```bash
 cp .env.example .env
-# Set OPENAI_API_KEY and/or TYPESAFE_API_KEY. Never use a VITE_ prefix.
+# TYPESAFE_API_KEY — выбор Jev; OPENAI_API_KEY — объяснения OpenAI.
+# Ключи только в .env, без префикса VITE_.
 npm run demo
 ```
 
-The engine owns the numbers. Server and browser validate JSON Schema; the browser reconstructs candidate effects independently. Changing context invalidates pending advice. Provider errors fall back visibly. Jev confidence concerns its selection, not the likelihood of a real-world outcome. [Eight contracts and trust boundaries](docs/AI-CONTRACTS.md)
+Откройте `http://localhost:8789`: **Кабинет мэра → AI-советник → Получить совет**. Можно подключить один или оба сервиса. Jev выбирает только из рассчитанных допустимых вариантов; OpenAI объясняет последствия. Сервер и браузер проверяют JSON Schema, а числа заново вычисляются движком. Предложение не принимается автоматически. При ошибке остаётся явно обозначенный локальный анализ.
 
-**Provider adapters are tested with mocks. Live paid calls require your keys and have not been verified here.** The local advisor is rule-based and greedy; it is not an LLM or a proven global optimizer.
+Настраиваемые модели по умолчанию: `jev-1.13.0` и `gpt-4.1-mini`. Ключи остаются на localhost-сервере и не попадают в офлайн-файл. Уверенность Jev не означает вероятность реального городского результата. [Восемь схем и границы проверки](docs/AI-CONTRACTS.md).
 
-## Same start. Inspectable result.
+Интеграции проверены на имитации ответов. Реальные платные вызовы без ваших ключей **не проверены**. Сервер предназначен для локальной демонстрации.
 
-Everyone receives **100 budget**, the same five districts and the same fifty indicators. Choose **exactly five distinct policies**, at most two per category. Local measures require a district; city measures apply everywhere. All specified conflicts are enforced. Unspent money earns no bonus.
+## Карта проекта
 
-A turn is a decision, not another elapsed quarter. Every policy uses the same eight-quarter horizon, so changing the order cannot change the final score.
+| Файл                                                                       | Назначение                                             |
+| -------------------------------------------------------------------------- | ------------------------------------------------------ |
+| [`src/game/engine.ts`](src/game/engine.ts)                                 | Конкурсные правила и точный расчёт                     |
+| [`src/game/data.ts`](src/game/data.ts)                                     | Датасет организаторов и тексты RU/EN/KK                |
+| [`src/game/planSearch.ts`](src/game/planSearch.ts)                         | Поиск допустимого плана и вклады Шепли                 |
+| [`src/game/sandbox.ts`](src/game/sandbox.ts)                               | Отдельные правила лаборатории и пользовательские меры  |
+| [`src/components/MayorExperience.tsx`](src/components/MayorExperience.tsx) | Игровой цикл: прогноз → решение → последствия          |
+| [`src/components/CityAnalytics.tsx`](src/components/CityAnalytics.tsx)     | Общая аналитика отчёта и лаборатории                   |
+| [`schemas/`](schemas/) · [`server/`](server/)                              | Контракты AI, проверка ответов и локальное подключение |
+| [`tests/`](tests/)                                                         | Воспроизводимые проверки модели, API и браузера        |
 
-```text
-indicator = clip(base + Σ fullEffect × (8 − delay) / 8 + synergies, 0, 100)
-district  = Σ indicatorWeight × indicator
-city      = Σ populationShare × district
-Score     = 0.70 × city + 0.30 × weakestDistrict − criticalCount
-```
+## Проверка и развитие
 
-Critical means **strictly below 40**. Synergy bonuses are fixed and not reduced by delay. A partial game shows a forecast; an invalid set receives no final score. Milestones reward care, synergy and citywide improvement without adding hidden points.
+Тесты покрывают формулу, официальный пример, лаги, синергии, несовместимости, порог 40, все 120 перестановок примера и 60 воспроизводимых партий. Браузерные проверки проходят пять ходов, проверяют сохранение, экспорт, мобильный интерфейс, отсутствие WebGL и первый запуск HTML без сети.
 
-| Reproducible check                                      | Expected result                                       |
-| ------------------------------------------------------- | ----------------------------------------------------- |
-| Supplied initial state                                  | **52.55768**                                          |
-| `M7 Nura · M8 Nura · M10 Nura · M12 city · M5 Saryarka` | **95 spent · 56.54307 score · 0 critical indicators** |
-| All 120 orderings of that plan                          | Identical final result                                |
+`npm run checkpoint` проверяет проект, фиксирует завершённые изменения и отправляет их в командный репозиторий без force-push и пустых коммитов.
 
-These values are calculated from the dataset; the implementation does not substitute reference totals.
+Данные синтетические; карта не повторяет реальные границы районов. Это учебная модель, не прогноз реальной Астаны. Следующие шаги: случайные события в лаборатории, реальные GIS-слои и общая таблица результатов.
 
-![Full report with district comparisons and policy contributions](docs/screenshots/report-en.png)
-
-## Built to inspect
-
-**React · TypeScript · Vite · IsoCity Canvas · AJV · Playwright**
-
-```text
-Player choice → rule validation → deterministic calculation → city + report
-                                        ↓
-                              verified legal candidates
-                                        ↓
-                            local advice / Jev selection
-                                        ↓
-                            optional grounded explanation
-```
-
-| Location                                                                   | What to inspect                                                |
-| -------------------------------------------------------------------------- | -------------------------------------------------------------- |
-| [`src/game/engine.ts`](src/game/engine.ts)                                 | Budget, effects, delays, synergies, conflicts and Score        |
-| [`src/game/data.ts`](src/game/data.ts)                                     | Organizer values and RU/EN/KK policy copy                      |
-| [`src/game/astanaMap.ts`](src/game/astanaMap.ts)                           | Deterministic city structure and visual policy effects         |
-| [`src/components/MayorExperience.tsx`](src/components/MayorExperience.tsx) | Preview → fund → consequences, advisor and term summary        |
-| [`schemas/`](schemas/) · [`server/`](server/)                              | Validated AI contracts and local provider integration          |
-| [`tests/`](tests/)                                                         | Model invariants, API boundaries and complete browser journeys |
-
-No database or runtime CDN. Original generated Astana landmarks and welcome artwork, IsoCity assets, Lucide icons, Manrope and Unbounded fonts are bundled locally. The upstream MIT license is preserved in source and the offline HTML.
-
-## Verify it yourself
-
-```bash
-npm run check                    # Unit/API/layout tests, TypeScript, production build
-npx playwright install chromium  # Once per environment
-npm run test:e2e                  # Five turns, offline, mobile, onboarding, AI boundaries
-npm run format:check
-npm run package                  # Rebuild the portable play/QALA.html
-```
-
-The suite checks the official example, conflicts, all scopes/delays/synergies, strict thresholds, permutation invariance and seeded legal games. Browser journeys verify previews spend nothing, undo and persistence work, phone/Kazakh layouts fit, and a complete `file://` game sends **zero HTTP requests**. See the [verification record](docs/VERIFICATION.md) for actual results and limits, including the repository account issue that prevented hosted CI from running.
-
-## Beyond the score
-
-The mayor’s handbook offers eight original tips connected to playable measures: access versus traffic flow, parks versus schools, safer streets, and protecting underserved districts. Topics were inspired by the supplied introduction/contents excerpt of Ilya Varlamov and Maxim Katz’s _100 Tips for a Mayor_; the book itself is not redistributed.
-
-Save up to ten scenarios locally, compare them and export a replayable JSON decision record. Random events, a shared leaderboard and real GIS layers remain future work. The game is an educational simulation, not a calibrated municipal forecast.
-
-[Case coverage](docs/CASE-AUDIT.md) · [Model specification](docs/MODEL.md) · [Source dataset](docs/supplied-dataset.ru.txt) · [Artwork provenance](docs/ASSETS.md) · [Final experience plan](docs/FINAL-HOUR.md) · [Third-party notices](THIRD-PARTY-NOTICES.md)
-
-Built by **Sauce Code** for [HackAlem AI](https://hackalem.ai/).
+[План на пять часов](docs/PLAN.md) · [Модель](docs/MODEL.md) · [Демо для жюри](docs/DEMO.md) · [Исходный датасет](docs/supplied-dataset.ru.txt)

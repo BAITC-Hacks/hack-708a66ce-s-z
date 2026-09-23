@@ -3756,3 +3756,144 @@
     display: none;
   }
 }
+
+/* Contextual analytics and the separate scenario laboratory. */
+.budget-lab-link {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  border: 0;
+  background: transparent;
+  color: #6f816c;
+  padding: 4px 2px;
+  margin-left: 2px;
+  vertical-align: middle;
+  cursor: pointer;
+  border-radius: 4px;
+}
+.budget-lab-link:hover {
+  background: #eee7ca;
+  color: #796030;
+}
+.budget-lab-link em {
+  margin-left: 0;
+}
+.budget-lab-link:focus-visible {
+  outline: 2px solid #ca9130;
+  outline-offset: 2px;
+}
+.brief-district-meta {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 9px;
+  font-size: 9px;
+  color: #69806b;
+  margin: -4px 0 9px;
+}
+.brief-district-meta > span {
+  display: inline-flex;
+  gap: 4px;
+  align-items: center;
+}
+.brief-district-meta b {
+  color: #32745b;
+  font-size: 10px;
+  font-variant-numeric: tabular-nums;
+}
+.desk-laboratory {
+  display: flex;
+  width: 100%;
+  align-items: center;
+  gap: 13px;
+  padding: 15px 17px;
+  border-radius: 8px;
+  border: 1px dashed #bacbad;
+  color: #315f54;
+  background: #eff2e1;
+  margin: 15px 0;
+  text-align: left;
+  cursor: pointer;
+}
+.desk-laboratory > span {
+  display: grid;
+  gap: 5px;
+  flex: 1;
+}
+.desk-laboratory b {
+  font-size: 12px;
+}
+.desk-laboratory small {
+  font-size: 10px;
+  line-height: 1.5;
+  color: #6d806d;
+}
+.desk-laboratory:hover {
+  background: #e5edce;
+}
+.panel-district {
+  width: 790px;
+}
+.panel-district .ca-card {
+  padding: 0;
+  border: 0;
+  background: transparent;
+}
+.panel-district .ca-card h2 {
+  margin: 6px 0 0;
+  font-size: 27px;
+}
+.panel-district .ca-card .ca-caption {
+  font-size: 11px;
+  line-height: 1.65;
+  color: #617568;
+}
+.district-city-analytics {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 9px;
+  width: 100%;
+  margin-top: 24px;
+  padding: 12px;
+  border: 1px solid #cbd8be;
+  border-radius: 6px;
+  color: #356759;
+  background: #eef1df;
+  font-size: 11px;
+  cursor: pointer;
+}
+.district-city-analytics:hover {
+  background: #e4edce;
+}
+@media (max-width: 680px) {
+  .brief-district-meta {
+    font-size: 8px;
+    margin: 1px 0 5px;
+  }
+  .brief-district-meta b {
+    font-size: 8px;
+  }
+  .budget-lab-link {
+    gap: 2px;
+    padding: 4px 0;
+    margin-left: 0;
+  }
+  .budget-lab-link > svg {
+    width: 8px;
+    height: 8px;
+  }
+  .desk-laboratory {
+    gap: 10px;
+    padding: 13px;
+  }
+  .desk-laboratory b {
+    font-size: 11px;
+  }
+  .desk-laboratory small {
+    font-size: 9px;
+  }
+}
+.brief-district-meta b.is-negative {
+  color: #ac4b38;
+}

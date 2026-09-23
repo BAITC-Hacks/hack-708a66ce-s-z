@@ -26,13 +26,21 @@ For an immediate offline demo, open **play/QALA.html** directly in a browser. De
 - `docs/AI-CONTRACTS.md`: schema boundaries between the model, Jev and narration.
 - `docs/ISOCITY.md`, `THIRD-PARTY-NOTICES.md`: pinned renderer provenance and MIT attribution.
 
-The game has 100 budget, exactly five distinct policies, at most two per category, and an eight-quarter horizon. Decision order must not change the result. Ambient cars, people, visual district shapes and milestones must not alter score, population weights, policy costs or effects. Preserve the supplied five districts even though the contemporary city's administrative map differs.
+The **official game** has 100 budget, exactly five distinct policies, at most two per category, and an eight-quarter horizon. Decision order must not change the result. Ambient cars, people, visual district shapes and milestones must not alter score, population weights, policy costs or effects. Preserve the supplied five districts even though the contemporary city's administrative map differs.
 
 Reference oracles, calculated from the dataset rather than hard-coded in implementation:
 
 - Baseline: **52.55768**.
 - `M7 Nura, M8 Nura, M10 Nura, M12 city, M5 Saryarka`: cost **95**, score **56.54307**, zero critical indicators.
 - A preview spends nothing. Invalid or incomplete sets receive no final score.
+
+## Keep the experimental lab separate
+
+`src/game/sandbox.ts` and `ScenarioLab.tsx` implement optional custom rules, persisted only under `qala-lab-v1`. Budget 1–1,000, decision count 1–10, and up to 30 custom measures are explicit sandbox inputs. Never write those choices into the official session/archive or send them to the official AI contracts. A budget/count violation may retain a clearly labeled computed forecast; it must never become a valid final result. Custom effects are user assumptions. Preserve the shared analytic views and export labeling.
+
+`planSearch.ts` uses official rules for a bounded beam search (180 states per depth), keeps current decisions fixed, and never auto-adopts a proposal. Cancellation and stale-result guards protect interaction. Its exact Shapley attribution is used in the UI; legacy marginal contributions in exported v1 documents retain their defined semantics.
+
+Russian is the default UI language and root `README.md`. Maintain English in `README.en.md`, Kazakh in `README.kk.md`, and the compatible Russian mirror `README.ru.md`.
 
 ## Make a change and verify it
 

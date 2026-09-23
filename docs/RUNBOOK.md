@@ -63,3 +63,9 @@ Install Chromium once. Browser tests use port **4179** and write screenshots to 
 | Browser blocks persistent storage           | Continue playing and export the scenario JSON before closing.                                                                     |
 
 For implementation boundaries, test oracles and contribution instructions, read [AGENTS.md](../AGENTS.md). For what has actually been verified, read [VERIFICATION.md](VERIFICATION.md).
+
+## Team analytics and custom scenarios
+
+Russian is the default UI and repository README. English and Kazakh remain selectable. From the Mayor’s desk, open **Scenario laboratory** (Лаборатория сценариев) to edit custom limits or add a policy. The official game remains fixed at 100 budget and five choices. The lab uses independent browser storage and labels its JSON `qala-sandbox-v1`; never submit it as an official five-decision result.
+
+Use the advisor’s **Find a strong plan** to compare a complete legal continuation. It keeps funded choices, runs locally and only opens a preview. The report and lab share district population shares, all ten indicators, deficit charts, a 5×10 matrix and the formula. The visible report and report AI narration use additive Shapley allocation; v1 official JSON retains its previously defined marginal diagnostics.

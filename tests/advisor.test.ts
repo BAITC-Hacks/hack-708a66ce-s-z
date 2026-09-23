@@ -2,6 +2,7 @@ import { test } from 'node:test';
 import assert from 'node:assert/strict';
 import { EXAMPLE } from '../src/game/data';
 import { explanationInput } from '../src/game/explanation';
+import { BASELINE, contributions, type Decision } from '../src/game/engine';
 import { generateAdvice } from '../server/advisor';
 test('LLM receives only trusted engine-generated scores and labeled forecast/final context', () => {
   const context = explanationInput(EXAMPLE, 'kk');
@@ -11,6 +12,31 @@ test('LLM receives only trusted engine-generated scores and labeled forecast/fin
   assert.equal(context.language, 'kk');
   assert.equal(explanationInput([], 'en').mode, 'forecast');
   assert.throws(() => explanationInput([{ measureId: 'fake' }], 'ru'));
+});
+test('report narration uses additive Shapley allocation for synergy and shared threshold benefits', () => {
+  const plans: readonly (readonly Decision[])[] = [
+    EXAMPLE,
+    [{ measureId: 'M10', districtId: 'nura' }, { measureId: 'M12' }],
+    [
+      { measureId: 'M7', districtId: 'nura' },
+      { measureId: 'M9', districtId: 'nura' },
+    ],
+  ];
+  for (const decisions of plans) {
+    const context = explanationInput(decisions, 'en');
+    assert.equal(context.attribution.method, 'exact-shapley');
+    assert.equal(context.attribution.additiveBeforeRounding, true);
+    assert.equal(context.rules.contributionsAreNotAdditive, false);
+    assert.equal(context.attribution.baselineScore, BASELINE.score);
+    const sum = context.contributions.reduce((total, row) => total + row.gain, 0);
+    assert.ok(Math.abs(sum - context.attribution.totalGain) < 1e-10);
+    assert.equal(context.attribution.totalGain, context.result.score - BASELINE.score);
+  }
+  const sharedThreshold = plans[2];
+  const oldMarginals = contributions(sharedThreshold).reduce((total, row) => total + row.gain, 0);
+  assert.ok(
+    Math.abs(oldMarginals - explanationInput(sharedThreshold, 'en').attribution.totalGain) > 0.9,
+  );
 });
 test('Responses API adapter sends computed context without storing, extracts output_text', async () => {
   const input = explanationInput(EXAMPLE, 'en');
@@ -37,6 +63,9 @@ test('Responses API adapter sends computed context without storing, extracts out
   assert.equal(received.store, false);
   assert.equal(JSON.parse(received.input).result.cost, 95);
   assert.match(received.instructions, /do not calculate/i);
+  assert.equal(JSON.parse(received.input).attribution.method, 'exact-shapley');
+  assert.match(received.instructions, /sum to attribution.totalGain before rounding/);
+  assert.doesNotMatch(received.instructions, /contributions cannot be summed/);
 });
 test('provider errors and empty results produce controlled failures', async () => {
   const input = explanationInput([], 'en');

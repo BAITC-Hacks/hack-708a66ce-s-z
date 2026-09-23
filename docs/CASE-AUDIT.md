@@ -8,7 +8,7 @@ Reviewed against the supplied three-page Astana Innovations case PDF and the det
 | Five decisions across the five available directions | All 14 measures; exact five-decision completion; at most two per category, as required by the detailed dataset                                                           |
 | Prevent overspending                                | Pure validation before every commit; completion search also prevents an unfinished dead end                                                                              |
 | Decisions affect indicators and final QoL           | Full supplied effects, eight-quarter horizon, fixed synergies, conflicts and clipping; official example reproduced                                                       |
-| Explain strengths, risks and consequences           | Forecast modal, all indicator deltas, weakest district, critical penalties, marginal contributions, local advice and optional server LLM narration                       |
+| Explain strengths, risks and consequences           | Forecast modal, all indicator deltas, weakest district, critical penalties, Shapley contributions, local advice and optional server LLM narration                        |
 | AI analysis                                         | Jev typed selection and OpenAI structured narration are schema-checked and tested with mocks. Live keyed calls remain unverified. Local advice is explicitly rule-based. |
 | README / reproducibility                            | RU/EN/Kazakh pitches, real screenshots, documented model, local tests, downloadable single-file offline game                                                             |
 
@@ -17,9 +17,9 @@ The broad PDF does not require one decision per category. The detailed dataset s
 ## Optional additions allowed by the case
 
 - District visualization: implemented, including baseline/current comparison and policy effects.
-- Recommendations: legal next moves ranked by immediate score gain, with completion feasibility. This is not a global optimizer.
+- Recommendations: immediate-gain local suggestions plus a cancellable beam search of complete legal plans. It preserves funded decisions and reports the best found option without claiming a global optimum.
 - Comparing teams: local scenario saving/comparison is implemented. A shared multi-team leaderboard is not.
-- Unexpected events: explicitly allowed as an optional extension. Deferred to a separate sandbox, because altering the judged dataset would break reproducibility of the supplied scoring rules.
+- Unexpected events: explicitly allowed as an optional extension. Random events remain deferred; custom scenarios and editable limits now live in a separately labeled sandbox because altering the judged dataset would break reproducibility of the supplied scoring rules.
 - Automatic brief presentation: the report and JSON export are implemented; slide generation is not.
 
 The onboarding, original artwork, animated city and educational handbook complement the case without modifying its numerical model. The handbook has eight original tips connected to existing measures. It is not a reproduction of the attached book.
@@ -35,3 +35,7 @@ The 100-point rubric allocates 25 to task completion, 25 to technical implementa
 ## Game direction
 
 The isolated game version uses a guided first decision, three-card hand, explicit preview and funding, immediate consequence reports, and outcome-based milestones. Supporting tools are grouped in the Mayor’s desk. The user-selected IsoCity rendering layer, bundled assets and Astana landmark layout improve readability without changing any dataset value. Milestones add neither budget nor score. This keeps the entertainment layer aligned with the judged case.
+
+## Teammate integration
+
+The `akim_5_hr` prototype contributed editable experimental limits, custom problems/measures, district population shares and ten-indicator details, critical-deficit charts, the 5×10 matrix, a calculation breakdown, bounded plan search and Shapley attribution. They share the current game’s styling and offline packaging. The official 100/5 scenario remains unchanged. See [integration decisions](TEAM-INTEGRATION.md).

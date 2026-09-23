@@ -156,6 +156,16 @@ test('offline file launch includes artwork, complete gameplay and local advice w
   await expect(offlineConnection).toContainText('npm run demo');
   await expect(offlineConnection.getByTestId('advisor-openai-key')).toHaveCount(0);
   await page.keyboard.press('Escape');
+  await page.getByTestId('open-scenario-lab').click();
+  await customPolicy(page, 'Offline safety experiment');
+  await page.getByRole('button', { name: 'Indicators & consequences', exact: true }).click();
+  await expect(page.getByTestId('indicator-matrix').locator('tbody td')).toHaveCount(50);
+  await page.getByRole('button', { name: 'Return to city', exact: true }).click();
+  await expect(page.getByTestId('budget')).toContainText('100');
+  await panel(page, 'AI advisor');
+  await page.getByTestId('plan-search-start').click();
+  await expect(page.getByTestId('plan-search-result')).toBeVisible();
+  await page.keyboard.press('Escape');
   for (const [id, district] of example) await adopt(page, id, district);
   await page
     .getByTestId('applied-summary')
@@ -385,4 +395,154 @@ test('optional onboarding key connection clears input and never persists or call
   await connection.locator(':scope > summary').click();
   await page.getByRole('button', { name: 'Meet your city', exact: true }).click();
   await expect(page.getByTestId('budget')).toContainText('100');
+});
+
+async function customPolicy(page: Page, name = 'Safer walk to school') {
+  await page.getByRole('button', { name: /Add problem \/ policy/ }).click();
+  const form = page.getByTestId('custom-policy-form');
+  await form.getByRole('textbox', { name: 'Policy name', exact: true }).fill(name);
+  await form
+    .getByRole('textbox', { name: 'Problem and proposed solution', exact: true })
+    .fill('Improve crossings while reducing road capacity. Hypothetical test assumptions.');
+  await form.getByRole('combobox', { name: 'Category', exact: true }).selectOption('safety');
+  await form.getByLabel('Cost', { exact: true }).fill('12');
+  await form.getByLabel('Delay, quarters', { exact: true }).fill('2');
+  await form.getByLabel('B2 full effect', { exact: true }).fill('8');
+  await form.getByLabel('T1 full effect', { exact: true }).fill('-4');
+  await form.getByRole('button', { name: 'Add to catalogue', exact: true }).click();
+  await expect(page.getByTestId('lab-preview')).toContainText(name);
+  await expect(page.getByTestId('lab-preview')).toContainText('-3.00');
+  await page.getByTestId('lab-add-policy').click();
+}
+
+test('sandbox limits, custom tradeoffs, invalid forecasts, export and saved state never change official game', async ({
+  page,
+}) => {
+  const errors: string[] = [];
+  page.on('pageerror', (e) => errors.push(e.message));
+  await page.goto('/');
+  await english(page);
+  await adopt(page, 'M7');
+  await page.getByTestId('open-scenario-lab').click();
+  await expect(page.getByTestId('scenario-lab')).toBeVisible();
+  await expect(page.getByTestId('lab-budget')).toHaveText('24 / 100');
+  await page.getByLabel('Sandbox budget limit', { exact: true }).fill('120');
+  await page.getByLabel('Sandbox decision limit', { exact: true }).fill('2');
+  await page.getByRole('button', { name: 'Apply limits', exact: true }).click();
+  await customPolicy(page);
+  await expect(page.getByTestId('lab-budget')).toHaveText('36 / 120');
+  await expect(page.locator('.lab-valid')).toContainText('matches your custom rules');
+  await page.getByRole('button', { name: 'Indicators & consequences', exact: true }).click();
+  await expect(page.getByTestId('district-statistics')).toContainText('16%');
+  await expect(page.getByTestId('district-statistics').getByRole('meter')).toHaveCount(10);
+  await expect(page.getByTestId('indicator-matrix').locator('tbody td')).toHaveCount(50);
+  await expect(page.getByTestId('problem-chart')).toBeVisible();
+  await expect(page.getByTestId('calculation-model')).toContainText('70%');
+  const score = await page.getByTestId('lab-score').innerText();
+  await page.getByLabel('Sandbox budget limit', { exact: true }).fill('20');
+  await page.getByRole('button', { name: 'Apply limits', exact: true }).click();
+  await expect(page.getByTestId('lab-validation')).toContainText('budget');
+  await expect(page.getByTestId('lab-score')).toHaveText(score);
+  const downloadPromise = page.waitForEvent('download');
+  await page.getByRole('button', { name: 'Export JSON', exact: true }).click();
+  const download = await downloadPromise;
+  expect(download.suggestedFilename()).toBe('qala-sandbox.json');
+  const stream = await download.createReadStream();
+  const chunks: Buffer[] = [];
+  for await (const chunk of stream!) chunks.push(Buffer.from(chunk));
+  const exported = JSON.parse(Buffer.concat(chunks).toString());
+  expect(exported.mode).toBe('sandbox');
+  expect(exported.officialSubmission).toBe(false);
+  expect(exported.status).toBe('invalid-or-incomplete-custom-scenario');
+  expect(exported.customMeasures[0].effects).toEqual({ T1: -4, B2: 8 });
+  await page.getByRole('button', { name: 'Return to city', exact: true }).click();
+  await expect(page.getByTestId('budget')).toContainText('76');
+  await expect(page.getByTestId('score')).toContainText('54.01');
+  await page.reload();
+  await page.getByTestId('open-scenario-lab').click();
+  await expect(page.getByLabel('Sandbox budget limit', { exact: true })).toHaveValue('20');
+  await expect(page.locator('.lab-plan-list')).toContainText('Safer walk to school');
+  await expect(page.getByTestId('lab-score')).toHaveText(score);
+  expect(errors).toEqual([]);
+});
+
+test('Russian is the default and district analytics remain readable on phone', async ({ page }) => {
+  await page.goto('/');
+  await expect(page.locator('html')).toHaveAttribute('lang', 'ru');
+  await english(page);
+  await language(page, 'RU');
+  await page.getByTestId('open-scenario-lab').click();
+  await page.getByTestId('lab-policy-M7').click();
+  await page.getByTestId('lab-add-policy').click();
+  await page.getByTestId('lab-policy-M8').click();
+  await page.getByTestId('lab-add-policy').click();
+  await page.getByRole('button', { name: 'Показатели и последствия', exact: true }).click();
+  await expect(page.getByTestId('district-statistics')).toContainText('Доля населения');
+  await expect(page.getByTestId('district-statistics')).toContainText('16%');
+  await expect(page.getByTestId('indicator-matrix').locator('tbody td')).toHaveCount(50);
+  await page.screenshot({ path: 'docs/screenshots/analytics-ru.png', fullPage: true });
+  await page.getByTestId('indicator-matrix').scrollIntoViewIfNeeded();
+  await page.screenshot({ path: 'docs/screenshots/matrix-ru.png' });
+  await page.getByTestId('model-assumptions').locator('summary').click();
+  await page.getByTestId('calculation-model').scrollIntoViewIfNeeded();
+  await page.screenshot({ path: 'docs/screenshots/model-ru.png' });
+  await page.setViewportSize({ width: 390, height: 844 });
+  await page.getByTestId('district-statistics').scrollIntoViewIfNeeded();
+  expect(await page.evaluate(() => document.documentElement.scrollWidth <= innerWidth)).toBe(true);
+  await expect(page.getByTestId('district-statistics').getByRole('meter')).toHaveCount(10);
+  await page.screenshot({ path: 'docs/screenshots/analytics-mobile-ru.png' });
+  await page.getByRole('button', { name: 'Вернуться в город', exact: true }).click();
+  await expect(page.getByTestId('score')).toContainText('52.56');
+});
+
+test('full plan search preserves funded choices and only opens an unfunded proposal', async ({
+  page,
+}) => {
+  await page.goto('/');
+  await english(page);
+  await adopt(page, 'M7');
+  await panel(page, 'AI advisor');
+  await page.getByTestId('plan-search-start').click();
+  await expect(page.getByTestId('plan-search-result')).toBeVisible();
+  await expect(page.getByTestId('plan-search-result').locator('li')).toHaveCount(5);
+  await expect(page.getByTestId('plan-search-result')).toContainText('School & kindergarten');
+  await page.getByTestId('plan-search').scrollIntoViewIfNeeded();
+  await page.screenshot({ path: 'docs/screenshots/plan-search-en.png' });
+  await expect(page.getByTestId('budget')).toContainText('76');
+  await page.getByTestId('plan-search-preview').click();
+  await expect(page.locator('.term-review')).toBeVisible();
+  await expect(page.getByTestId('budget')).toContainText('76');
+  await expect(page.getByTestId('commit-policy')).toBeEnabled();
+  await page.keyboard.press('Escape');
+  await expect(page.getByTestId('score')).toContainText('54.01');
+});
+
+test('sandbox previews show actual synergy and clipped indicator changes', async ({ page }) => {
+  await page.goto('/');
+  await english(page);
+  await page.getByTestId('open-scenario-lab').click();
+  await page.getByTestId('lab-policy-M12').click();
+  await page.getByTestId('lab-add-policy').click();
+  await page.getByTestId('lab-policy-M10').click();
+  await expect(page.getByTestId('lab-preview').locator('.lab-preview-effects')).toContainText(
+    '+12.50',
+  );
+  await page.getByTestId('lab-add-policy').click();
+  await page.getByRole('button', { name: /Add problem \/ policy/ }).click();
+  const form = page.getByTestId('custom-policy-form');
+  await form
+    .getByRole('textbox', { name: 'Policy name', exact: true })
+    .fill('Saturated road improvement');
+  await form
+    .getByRole('textbox', { name: 'Problem and proposed solution', exact: true })
+    .fill('A deliberately large hypothetical effect to test the 100-point ceiling.');
+  await form.getByLabel('Delay, quarters', { exact: true }).fill('0');
+  await form.getByLabel('T1 full effect', { exact: true }).fill('100');
+  await form.getByRole('button', { name: 'Add to catalogue', exact: true }).click();
+  await expect(page.getByTestId('lab-preview').locator('.lab-preview-effects')).toContainText(
+    '+45.00',
+  );
+  await expect(page.getByTestId('lab-preview').locator('.lab-preview-effects')).not.toContainText(
+    '+100.00',
+  );
 });
