@@ -154,6 +154,12 @@ test('offline file launch includes artwork, complete gameplay and local advice w
   const offlineConnection = page.locator('.panel-advisor').getByTestId('advisor-connection');
   await offlineConnection.locator(':scope > summary').click();
   await expect(offlineConnection).toContainText('npm run demo');
+  await expect(
+    offlineConnection.getByRole('link', { name: 'Open AI version', exact: true }),
+  ).toHaveAttribute('href', 'http://localhost:8789/#ai');
+  await expect(
+    offlineConnection.getByRole('link', { name: 'Open AI version', exact: true }),
+  ).toHaveAttribute('target', '_blank');
   await expect(offlineConnection.getByTestId('advisor-openai-key')).toHaveCount(0);
   await page.keyboard.press('Escape');
   await page.getByTestId('open-scenario-lab').click();
@@ -545,4 +551,39 @@ test('sandbox previews show actual synergy and clipped indicator changes', async
   await expect(page.getByTestId('lab-preview').locator('.lab-preview-effects')).not.toContainText(
     '+100.00',
   );
+});
+
+test('AI setup deep link opens the key form without changing a saved plan or making provider requests', async ({
+  page,
+}) => {
+  let adviceRequests = 0;
+  await page.addInitScript(() => {
+    localStorage.setItem(
+      'qala-session-v1',
+      JSON.stringify([{ measureId: 'M7', districtId: 'nura' }]),
+    );
+  });
+  await page.route('**/api/session-credentials', (route) =>
+    route.fulfill({
+      json: {
+        csrfToken: 'deep-link-test-token-with-sufficient-length',
+        openai: { configured: false, source: 'none' },
+        jev: { configured: false, source: 'none' },
+      },
+    }),
+  );
+  await page.route('**/api/decision-support', async (route) => {
+    adviceRequests++;
+    await route.abort();
+  });
+  await page.goto('/#ai');
+  await expect(page.locator('.panel-advisor')).toBeVisible();
+  await expect(page.locator('.panel-advisor').getByTestId('advisor-openai-key')).toBeVisible();
+  await expect(page.locator('.mayor-experience')).toHaveAttribute('data-phase', 'play');
+  await expect(page.getByTestId('budget')).toContainText('76');
+  await expect(page.getByTestId('score')).toContainText('54.01');
+  expect(await page.evaluate(() => localStorage.getItem('qala-mayor-guide-v1'))).toBeNull();
+  expect(adviceRequests).toBe(0);
+  await page.keyboard.press('Escape');
+  await expect(page.getByTestId('budget')).toContainText('76');
 });

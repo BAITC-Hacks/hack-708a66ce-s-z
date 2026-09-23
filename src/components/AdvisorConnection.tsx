@@ -1,5 +1,5 @@
 import { useEffect, useId, useRef, useState, type FormEvent } from 'react';
-import { Check, ChevronDown, KeyRound, LoaderCircle, Unplug } from 'lucide-react';
+import { ArrowUpRight, Check, ChevronDown, KeyRound, LoaderCircle, Unplug } from 'lucide-react';
 import type { Lang } from '../game/data';
 import '../advisor-connection.css';
 
@@ -25,7 +25,10 @@ function readStatus(input: unknown): Status | null {
 export function AdvisorConnection({ lang }: { lang: Lang }) {
   const t = (ru: string, en: string, kk: string) => ({ ru, en, kk })[lang];
   const id = useId();
-  const [expanded, setExpanded] = useState(false),
+  const localServer =
+    ['http:', 'https:'].includes(location.protocol) &&
+    ['localhost', '127.0.0.1', '[::1]'].includes(location.hostname);
+  const [expanded, setExpanded] = useState(() => localServer && location.hash === '#ai'),
     [status, setStatus] = useState<Status | null>(null),
     [openaiKey, setOpenaiKey] = useState(''),
     [typesafeKey, setTypesafeKey] = useState(''),
@@ -33,9 +36,6 @@ export function AdvisorConnection({ lang }: { lang: Lang }) {
     [message, setMessage] = useState<'connected' | 'disconnected' | 'failed' | null>(null);
   const token = useRef<string | null>(null),
     request = useRef<AbortController | null>(null);
-  const localServer =
-    ['http:', 'https:'].includes(location.protocol) &&
-    ['localhost', '127.0.0.1', '[::1]'].includes(location.hostname);
   const busy = phase === 'checking' || phase === 'saving';
   const hasSession = status?.openai.source === 'session' || status?.jev.source === 'session';
   const configured = status?.openai.configured || status?.jev.configured;
@@ -47,6 +47,9 @@ export function AdvisorConnection({ lang }: { lang: Lang }) {
     },
     [],
   );
+  useEffect(() => {
+    if (expanded) void refresh();
+  }, [expanded]);
   async function refresh() {
     if (!localServer) return;
     request.current?.abort();
@@ -136,7 +139,6 @@ export function AdvisorConnection({ lang }: { lang: Lang }) {
       onToggle={(event) => {
         const open = event.currentTarget.open;
         setExpanded(open);
-        if (open && !busy) void refresh();
         if (!open) {
           setOpenaiKey('');
           setTypesafeKey('');
@@ -165,19 +167,68 @@ export function AdvisorConnection({ lang }: { lang: Lang }) {
           <div className="advisor-connection-offline" role="status">
             <strong>
               {t(
-                'Сначала запустите локальный сервер',
-                'Start the local server first',
-                'Алдымен жергілікті серверді іске қосыңыз',
+                'AI-советник — в локальной версии',
+                'AI advice is in the local app',
+                'AI кеңесі жергілікті нұсқада',
               )}
             </strong>
             <p>
               {t(
-                'В папке проекта выполните команду и откройте адрес из терминала. Ключ можно добавить там.',
-                'In the project folder, run this command and open the address printed in your terminal. Add your key there.',
-                'Жоба қалтасында осы команданы орындап, терминалдағы мекенжайды ашыңыз. Кілтті сол жерде қосуға болады.',
+                'Если сервер уже работает, просто откройте AI-версию. Команды повторно запускать не нужно.',
+                'If the server is already running, just open the AI version. No commands need to be run again.',
+                'Сервер іске қосылған болса, AI нұсқасын ашыңыз. Командаларды қайта орындау қажет емес.',
               )}
             </p>
-            <code>npm run demo</code>
+            <a
+              className="advisor-open-ai"
+              data-testid="open-ai-version"
+              href="http://localhost:8789/#ai"
+              target="_blank"
+              rel="noopener noreferrer"
+            >
+              {t('Открыть AI-версию', 'Open AI version', 'AI нұсқасын ашу')}
+              <ArrowUpRight size={16} />
+            </a>
+            <p className="advisor-separate-save">
+              {t(
+                'В локальной версии отдельное сохранение браузера. Партия из офлайн-файла автоматически не переносится.',
+                'The local app has a separate browser save. Your offline-file game is not transferred automatically.',
+                'Жергілікті нұсқада браузердің бөлек сақталымы бар. Офлайн файлдағы ойын автоматты түрде көшірілмейді.',
+              )}
+            </p>
+            <details className="advisor-first-launch">
+              <summary>
+                {t(
+                  'Первый запуск или ошибка запуска',
+                  'First launch or a startup error',
+                  'Алғашқы іске қосу немесе іске қосу қатесі',
+                )}
+              </summary>
+              <p>
+                {t(
+                  'В папке актуальной версии проекта выполните:',
+                  'From the current project version’s folder, run:',
+                  'Жобаның қазіргі нұсқасының қалтасында орындаңыз:',
+                )}
+              </p>
+              <pre>
+                <code>{'npm ci\nnpm run demo'}</code>
+              </pre>
+              <p>
+                {t(
+                  'Missing script: "demo" — открыта старая или другая папка проекта. Используйте актуальную версию репозитория.',
+                  'Missing script: "demo" means you are in an old or different project folder. Use the current repository version.',
+                  'Missing script: "demo" — ескі немесе басқа жоба қалтасы ашылған. Репозиторийдің қазіргі нұсқасын қолданыңыз.',
+                )}
+              </p>
+              <p>
+                {t(
+                  'EADDRINUSE или «порт занят» — сервер уже использует этот адрес. Откройте существующую AI-версию по кнопке выше.',
+                  'EADDRINUSE or “port in use” means a server already uses this address. Open the existing AI version using the button above.',
+                  'EADDRINUSE немесе «порт бос емес» — сервер бұл мекенжайды пайдаланып тұр. Жоғарыдағы батырмамен AI нұсқасын ашыңыз.',
+                )}
+              </p>
+            </details>
             {localServer && (
               <button type="button" onClick={() => void refresh()}>
                 {t('Проверить ещё раз', 'Check again', 'Қайта тексеру')}

@@ -23,6 +23,8 @@ For development with hot reload, run `npm run dev`. If you need AI, keep `npm st
 
 ## Optional AI explanations
 
+If QALA is already running, open **http://localhost:8789/#ai** to go straight to the key form. Do not run a second server. The offline HTML provides an **Open AI version** button for this address; it opens a separate tab only when clicked. The offline file and localhost have separate browser saves.
+
 In the local app, use the optional AI connection in onboarding or open the advisor from the city. Enter an OpenAI API key to enable generated explanations. Jev's Typesafe key is optional for typed recommendation selection. Connecting a key does not make a paid model call; requesting AI advice does. Session keys stay in local server memory and are cleared on disconnect or server restart.
 
 Alternatively:
@@ -51,16 +53,17 @@ Install Chromium once. Browser tests use port **4179** and write screenshots to 
 
 ## Common setup issues
 
-| Symptom                                     | Action                                                                                                                            |
-| ------------------------------------------- | --------------------------------------------------------------------------------------------------------------------------------- |
-| `npm` or Node is missing/too old            | Install Node.js 22.18+ and reopen the terminal.                                                                                   |
-| Port 8789 is occupied                       | Close your own previous QALA server, or run `ADVISOR_PORT=8790 npm run demo` and open its printed URL.                            |
-| Local app says “Build the game first”       | Use `npm run demo`, which builds before starting.                                                                                 |
-| Dev game works but AI server is unavailable | Run `npm start` in a second terminal on 8789; the dev proxy targets that port.                                                    |
-| Download opens as GitHub source text        | Use **Download raw file** for `play/QALA.html`, not “Save page” on the GitHub preview.                                            |
-| Playwright cannot find a browser            | Run `npx playwright install chromium`; on Linux CI add `--with-deps`.                                                             |
-| Provider is unavailable or key is rejected  | Inspect the visible status; local analysis remains usable. Verify the key/account separately. No automated test needs a real key. |
-| Browser blocks persistent storage           | Continue playing and export the scenario JSON before closing.                                                                     |
+| Symptom                                     | Action                                                                                                                                                      |
+| ------------------------------------------- | ----------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| `npm` or Node is missing/too old            | Install Node.js 22.18+ and reopen the terminal.                                                                                                             |
+| Port 8789 is occupied                       | First open http://localhost:8789: QALA may already be running. If another app uses the port, run `ADVISOR_PORT=8790 npm run demo` and open its printed URL. |
+| `Missing script: "demo"`                    | You are in an old or different checkout. Use the latest repository main in a fresh folder; check that package.json includes the demo script.                |
+| Local app says “Build the game first”       | Use `npm run demo`, which builds before starting.                                                                                                           |
+| Dev game works but AI server is unavailable | Run `npm start` in a second terminal on 8789; the dev proxy targets that port.                                                                              |
+| Download opens as GitHub source text        | Use **Download raw file** for `play/QALA.html`, not “Save page” on the GitHub preview.                                                                      |
+| Playwright cannot find a browser            | Run `npx playwright install chromium`; on Linux CI add `--with-deps`.                                                                                       |
+| Provider is unavailable or key is rejected  | Inspect the visible status; local analysis remains usable. Verify the key/account separately. No automated test needs a real key.                           |
+| Browser blocks persistent storage           | Continue playing and export the scenario JSON before closing.                                                                                               |
 
 For implementation boundaries, test oracles and contribution instructions, read [AGENTS.md](../AGENTS.md). For what has actually been verified, read [VERIFICATION.md](VERIFICATION.md).
 

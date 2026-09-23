@@ -114,7 +114,14 @@ type Phase = 'arrival' | 'briefing' | 'play' | 'response' | 'finale';
 export function MayorExperience(p: Props) {
   const { selected, decisions, result, lang } = p,
     t = (ru: string, en: string, kk: string) => ({ ru, en, kk })[lang];
+  const [aiEntry] = useState(
+    () =>
+      ['http:', 'https:'].includes(location.protocol) &&
+      ['localhost', '127.0.0.1', '[::1]'].includes(location.hostname) &&
+      location.hash === '#ai',
+  );
   const [phase, setPhase] = useState<Phase>(() => {
+    if (aiEntry) return 'play';
     try {
       return decisions.length || localStorage.getItem('qala-experience-v3') === 'done'
         ? 'play'
@@ -124,7 +131,7 @@ export function MayorExperience(p: Props) {
     }
   });
   const guide = useMayorOnboarding(decisions.length);
-  const [layer, setLayer] = useState<Layer>(null),
+  const [layer, setLayer] = useState<Layer>(() => (aiEntry ? 'advisor' : null)),
     [draft, setDraft] = useState<Measure | null>(null),
     [beforeView, setBeforeView] = useState(false),
     [category, setCategory] = useState<Category | 'all'>('all'),
@@ -205,6 +212,14 @@ export function MayorExperience(p: Props) {
       </div>
     ));
   const flowOpen = phase !== 'play';
+  useEffect(() => {
+    // Consume only the navigation intent; saved decisions and onboarding progress stay untouched.
+    if (aiEntry) {
+      try {
+        history.replaceState(history.state, '', location.pathname + location.search);
+      } catch {}
+    }
+  }, [aiEntry]);
   useEffect(() => {
     try {
       sessionStorage.setItem('qala-city-night', String(night));

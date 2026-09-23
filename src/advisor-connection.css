@@ -196,3 +196,56 @@
     animation: none !important;
   }
 }
+
+.advisor-connection-offline .advisor-open-ai {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 9px;
+  width: 100%;
+  min-height: 42px;
+  padding: 10px 14px;
+  color: #fff8e9;
+  background: #215c50;
+  border: 1px solid #17473e;
+  border-radius: 7px;
+  font-size: 12px;
+  font-weight: 800;
+  text-decoration: none;
+}
+.advisor-connection-offline .advisor-open-ai:hover {
+  background: #327666;
+}
+.advisor-connection-offline .advisor-open-ai:focus-visible {
+  outline: 3px solid #d9a43d;
+  outline-offset: 3px;
+}
+.advisor-connection-offline .advisor-separate-save {
+  font-size: 9px;
+  line-height: 1.6;
+  margin: 10px 0 14px;
+}
+.advisor-first-launch {
+  border-top: 1px solid #dbe3d4;
+  padding-top: 11px;
+}
+.advisor-first-launch > summary {
+  font-size: 10px;
+  color: #456959;
+  font-weight: 750;
+  cursor: pointer;
+}
+.advisor-first-launch p {
+  font-size: 10px;
+  line-height: 1.6;
+  margin: 10px 0;
+}
+.advisor-first-launch pre {
+  margin: 10px 0;
+}
+.advisor-first-launch pre code {
+  display: block;
+  white-space: pre-wrap;
+  line-height: 1.9;
+  margin: 0;
+}

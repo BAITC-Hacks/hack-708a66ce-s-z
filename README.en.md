@@ -88,6 +88,8 @@ Aida’s suggestion is visible on the city screen. Open it to preview a legal mo
 | **Jev selection**  | A Typesafe key is connected | Chooses a typed candidate from engine-calculated legal options |
 | **AI explanation** | An OpenAI key is connected  | Explains computed benefits, tradeoffs and uncertainty          |
 
+If the server is already running, open **http://localhost:8789/#ai** to reach the key form directly. The offline HTML includes an **Open AI version** link; no need to start a second server. The file and localhost keep separate browser saves.
+
 In the localhost app, onboarding offers an **optional API-key connection**. You can also connect from the advisor later. Session keys stay in local server memory and are cleared on disconnect or restart. Connecting does not call a paid model; asking for AI advice does. The offline HTML continues with clearly labeled local analysis.
 
 Developers can instead use an ignored `.env`:
