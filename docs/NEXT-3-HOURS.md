@@ -1,5 +1,7 @@
 # Decision workspace: three-hour execution plan
 
+> Historical design record. The active release uses the IsoCity game experience described in [README](../README.md), [the final-hour plan](FINAL-HOUR.md), and [the current city integration](ISOCITY.md). Earlier renderer, palette and map-first proposals below are retained as project history.
+
 User direction, September 23: prioritize a useful map-based municipal decision workflow, with a left control panel inspired by the supplied 2GIS screenshot. Preserve the verified five-turn simulation. Keep the handcrafted Phaser city as a secondary view. This replaces the card-hand cockpit as the default.
 
 ## Critical assessment

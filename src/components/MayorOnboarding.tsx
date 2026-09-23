@@ -2,6 +2,7 @@ import { useState } from 'react';
 import { ArrowRight, Check, Flag, MapPin, X } from 'lucide-react';
 import type { Lang } from '../game/data';
 import advisorArt from '../assets/advisor-aida.png';
+import { AdvisorConnection } from './AdvisorConnection';
 import '../onboarding.css';
 
 export type MayorGuideStage = 'briefing' | 'choose' | 'preview' | 'result';
@@ -143,6 +144,7 @@ export function MayorOnboarding({
               'Алдымен болжам. Бюджет тек растағаннан кейін жұмсалады.',
             )}
           </p>
+          <AdvisorConnection lang={lang} />
           <button className="gold-button" data-testid="onboarding-start" onClick={onContinue}>
             {t('Познакомиться с городом', 'Meet your city', 'Қаламен танысу')}
             <ArrowRight size={18} aria-hidden="true" />

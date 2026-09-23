@@ -2901,3 +2901,858 @@
     background: #18344af5;
   }
 }
+
+/* Civic strategy HUD: a light resource tray above the city, with one adviser. */
+.mayor-experience {
+  --navy: #153e43;
+  --ink: #173b3b;
+  --muted: #627873;
+  --gold: #f4be53;
+  --paper: #fff8e9;
+  --coral: #b6533f;
+  background: #bdccb9;
+}
+.term-shade {
+  background: linear-gradient(180deg, #153e4326, transparent 13%, transparent 78%, #153e431c);
+}
+.term-header {
+  height: 94px;
+  padding: 17px 28px;
+  gap: 24px;
+  border: 0;
+  background: transparent;
+}
+.term-brand {
+  color: #fff8e9;
+  background: #153e43;
+  border: 1px solid #31595b;
+  border-bottom: 3px solid #0a2c31;
+  padding: 12px 16px 11px;
+  border-radius: 10px;
+  box-shadow: 0 5px 12px #193f4220;
+  font-size: 25px !important;
+  letter-spacing: -1.3px;
+  flex: none;
+}
+.term-brand span {
+  color: #dfdfbf;
+  font-size: 7px;
+  letter-spacing: 1.05px;
+  margin-top: 5px;
+}
+.term-resources {
+  background: #fff8e9f7;
+  border: 1px solid #ffffff;
+  border-bottom: 3px solid #aeb99c;
+  box-shadow: 0 5px 16px #234c4320;
+  border-radius: 12px;
+  padding: 11px 21px;
+  gap: 26px;
+}
+.term-resources small {
+  color: #5d786f;
+  font-size: 9px;
+  font-weight: 650;
+}
+.term-resources b {
+  color: #173e41;
+  font-size: 24px;
+}
+.term-resources em {
+  color: #6c8175;
+}
+.resource-budget {
+  gap: 9px;
+}
+.resource-budget > svg {
+  color: #a47728;
+  background: #f7e6b7;
+  border: 1px solid #dec482;
+  width: 34px;
+  height: 34px;
+  padding: 7px;
+  border-radius: 50%;
+}
+.resource-turns {
+  border-color: #d7dcc9;
+  padding-inline: 24px;
+}
+.resource-turns > span {
+  gap: 6px;
+}
+.resource-turns i {
+  width: 26px;
+  height: 26px;
+  border: 1px solid #ccd5bf;
+  border-bottom-width: 2px;
+  border-radius: 6px;
+  color: #769080;
+  background: #eef0df;
+  font-size: 10px;
+  font-weight: 750;
+}
+.resource-turns i.done {
+  background: #2b6562;
+  color: #fff8e9;
+  border-color: #164947;
+}
+.resource-turns i.current {
+  color: #614916;
+  background: #f6cf79;
+  border-color: #d9aa4b;
+  box-shadow: 0 0 0 3px #f4be531e;
+}
+.resource-score em {
+  color: #31775f;
+}
+.resource-score:hover {
+  background: #eef2df;
+}
+.mayor-desk-button {
+  color: #fff8e9;
+  background: #153e43;
+  border-color: #48706c;
+  border-bottom: 3px solid #0a2c31;
+  border-radius: 9px;
+  min-height: 46px;
+}
+.mayor-desk-button:hover {
+  background: #25565a;
+}
+.city-brief-column {
+  position: absolute;
+  top: 117px;
+  left: 28px;
+  width: 250px;
+  z-index: 5;
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+.city-brief-column .district-brief {
+  position: relative;
+  inset: auto;
+  width: auto;
+  padding: 17px 18px;
+  background: #fff8e9f7;
+  border: 1px solid #fffdf4;
+  border-bottom: 3px solid #aeb89c;
+  border-radius: 11px;
+  color: #173e41;
+  box-shadow: 0 6px 15px #234d4320;
+}
+.brief-location {
+  color: #2d7068;
+  margin-bottom: 12px;
+}
+.brief-location select {
+  color: #245b58;
+}
+.district-brief h1 {
+  font-size: 19px;
+  line-height: 1.32;
+  margin: 8px 0 15px;
+  letter-spacing: -0.55px;
+}
+.brief-needs {
+  gap: 8px;
+}
+.brief-needs > div {
+  border-color: #dae1cb;
+  padding-bottom: 8px;
+}
+.brief-needs span {
+  color: #5e776e;
+  font-size: 10px;
+}
+.brief-needs b {
+  color: #2a605b;
+  font-size: 21px;
+}
+.brief-needs small {
+  color: #7a8a76;
+}
+.brief-needs .urgent {
+  color: #b6533f;
+}
+.district-brief > p {
+  color: #66796c;
+  font-size: 10px;
+  line-height: 1.55;
+  margin: 12px 0;
+}
+.brief-link {
+  border-color: #d5dec7;
+  color: #356e62;
+  padding-top: 11px;
+}
+.city-advice {
+  background: #153e43f7;
+  border: 1px solid #5b7b6b;
+  border-bottom: 3px solid #0a2c31;
+  border-radius: 11px;
+  box-shadow: 0 6px 15px #234d4320;
+  padding: 12px;
+  color: #fff8e9;
+}
+.city-advice-heading {
+  display: flex;
+  align-items: center;
+  gap: 9px;
+}
+.city-advice-heading > img {
+  width: 34px;
+  height: 38px;
+  object-fit: cover;
+  object-position: 50% 28%;
+  border-radius: 7px;
+  border: 1px solid #cbd4ad;
+}
+.city-advice-heading > div {
+  flex: 1;
+  min-width: 0;
+}
+.city-advice-heading strong {
+  display: block;
+  font-size: 11px;
+  font-weight: 800;
+}
+.city-advice-heading span {
+  display: block;
+  color: #bbd0bb;
+  font-size: 8px;
+  margin-top: 3px;
+}
+.city-advice-heading > button {
+  display: grid;
+  place-items: center;
+  width: 32px;
+  min-height: 35px;
+  border-radius: 6px;
+  color: #f4cd82;
+  background: #ffffff0c;
+}
+.city-advice-heading > button:hover {
+  background: #ffffff1c;
+}
+.city-advice-suggestion {
+  display: flex;
+  width: 100%;
+  align-items: center;
+  gap: 9px;
+  padding: 10px 9px;
+  margin-top: 10px;
+  text-align: left;
+  border: 1px solid #b8d1ac35;
+  border-radius: 7px;
+  background: #ffffff0c;
+  color: #fff8e9;
+}
+.city-advice-suggestion:hover {
+  border-color: #e6be6c;
+  background: #ffffff15;
+}
+.city-advice-suggestion > span:first-child {
+  flex: 1;
+  min-width: 0;
+}
+.city-advice-suggestion b {
+  display: block;
+  font-size: 11px;
+  line-height: 1.4;
+}
+.city-advice-suggestion small {
+  display: block;
+  font-size: 8px;
+  margin-top: 4px;
+  color: #bad5bb;
+}
+.city-advice-preview {
+  display: flex;
+  flex: none;
+  align-items: center;
+  gap: 5px;
+  color: #f4ce82;
+  font-size: 9px;
+  font-weight: 750;
+}
+.city-advice > p {
+  font-size: 11px;
+  color: #d7e4d1;
+  margin: 11px 0 0;
+}
+.mayor-experience[data-review='true'] .city-brief-column,
+.mayor-experience[data-phase='response'] .city-brief-column,
+.mayor-experience[data-phase='finale'] .city-brief-column {
+  opacity: 0;
+  pointer-events: none;
+}
+.city-view-switch {
+  background: #fff8e9f0;
+  border-color: #ffffff;
+  box-shadow: 0 3px 12px #244b3c20;
+  top: 113px;
+  left: 306px;
+}
+.city-view-switch button {
+  color: #658070;
+}
+.city-view-switch .active {
+  background: #245a58;
+  color: #fff8e9;
+}
+.policy-desk {
+  left: 308px;
+  right: 86px;
+  bottom: 26px;
+}
+.desk-title {
+  text-shadow: none;
+  background: #153e43ee;
+  padding: 12px 16px;
+  margin-bottom: 11px;
+  border: 1px solid #a9c4a43d;
+  border-radius: 10px;
+  box-shadow: 0 4px 12px #153e4318;
+}
+.desk-title h2 {
+  font-size: 20px;
+  margin-top: 2px;
+  letter-spacing: -0.4px;
+  color: #fff8e9;
+}
+.desk-title .term-kicker {
+  color: #dfc88b;
+  font-size: 8px;
+  letter-spacing: 1.1px;
+}
+.all-policies {
+  background: #ffffff0a;
+  border-color: #b9cbb951;
+  color: #e3e8d3;
+  padding: 9px 10px;
+  font-size: 10px !important;
+}
+.all-policies:hover {
+  background: #ffffff1a;
+}
+.term-policy-hand {
+  gap: 13px;
+}
+.civic-card {
+  border: 1px solid #fdf3d6;
+  border-radius: 10px;
+  background: #fff8e9;
+  padding: 13px 15px 11px;
+  box-shadow:
+    0 4px 0 #aeb396,
+    0 8px 16px #23493c30;
+}
+.civic-card::before {
+  height: 3px;
+  opacity: 0.7;
+}
+.civic-card:hover:not(:disabled) {
+  transform: translateY(-6px);
+  box-shadow:
+    0 4px 0 #d3ab54,
+    0 14px 24px #21453b35;
+}
+.card-heading > span {
+  color: #4f7969;
+  font-size: 8px;
+  letter-spacing: 0.5px;
+}
+.card-heading > b {
+  color: #805a23;
+  background: #f9eac5;
+  border-color: #e4cea0;
+  border-radius: 5px;
+  font-size: 16px;
+}
+.card-title {
+  color: #163e40;
+  font-size: 17px;
+  letter-spacing: -0.5px;
+}
+.card-impact {
+  color: #75826c;
+}
+.card-impact b {
+  color: #297158;
+}
+.card-foot {
+  border-color: #d9dfc7;
+  color: #6a826e;
+}
+.card-foot svg {
+  color: #426e60;
+}
+.gold-button {
+  border-color: #ffe0a0;
+  background: #f4be53;
+  box-shadow: 0 3px 0 #b38532;
+  color: #3a3b22;
+  border-radius: 7px;
+}
+.gold-button:hover:not(:disabled) {
+  background: #f9cf78;
+}
+.term-review,
+.term-panel,
+.term-flow {
+  color: #173e41;
+  background: #fff8e9;
+}
+.term-panel::backdrop,
+.term-flow::backdrop {
+  background: #163e4266;
+  backdrop-filter: blur(2px);
+}
+.term-review::backdrop {
+  background: #163e4212;
+}
+.review-head,
+.review-footer {
+  background: #fff8e9;
+  border-color: #dce0cb;
+}
+.review-score {
+  background: #e9f0da;
+  border-color: #cedbbb;
+}
+.review-score strong {
+  color: #2d6a58;
+}
+.review-score em {
+  color: #31745b;
+}
+.review-target select,
+.review-target strong {
+  background: #f4f1df;
+  border-color: #d6dcc5;
+  color: #2a5451;
+}
+.review-facts b {
+  color: #7d5b33;
+}
+.term-warning {
+  background: #fff0df;
+  border-color: #e2ba95;
+  color: #934c32;
+}
+.review-deltas strong.negative {
+  color: #b6533f;
+}
+.term-panel > header {
+  background: #f4f0dc;
+  border-color: #dce0cb;
+}
+.round-close {
+  background: #fff8e9;
+  border-color: #d2ddc5;
+  color: #55776b;
+}
+.catalog-filters .active,
+.desk-preferences .term-languages .active {
+  background: #245a58;
+  border-color: #245a58;
+  color: #fff8e9;
+}
+.policy-desk .mayor-guide-tip-choose {
+  --guide-ink: #f9d889;
+  --guide-muted: #d9e4ce;
+  background: #204d4ded;
+  border-color: #bdd0af52;
+}
+.term-finish-strip {
+  background: #153e43f2;
+  border-color: #afc3ab55;
+}
+.flow-arrival {
+  background: #153e43;
+  color: #fff8e9;
+}
+.arrival-veil {
+  background:
+    linear-gradient(90deg, #153e43 7%, #153e43eb 29%, #153e4344 58%, transparent 78%),
+    linear-gradient(0deg, #153e43d6, transparent 35%);
+}
+.arrival-copy h1 em {
+  color: #f4cb7a;
+}
+.arrival-top .term-languages {
+  background: #153e438c;
+}
+@media (min-width: 1700px) {
+  .city-brief-column {
+    left: 42px;
+    top: 119px;
+    width: 278px;
+  }
+  .city-brief-column .district-brief {
+    padding: 21px;
+  }
+  .district-brief h1 {
+    font-size: 22px;
+  }
+  .policy-desk {
+    left: 350px;
+    right: 134px;
+    max-width: 1100px;
+  }
+  .city-view-switch {
+    left: 350px;
+  }
+}
+@media (max-width: 1050px) and (min-width: 761px) {
+  .term-header {
+    padding-inline: 20px;
+    gap: 15px;
+  }
+  .term-brand {
+    font-size: 22px !important;
+    padding: 11px 12px;
+  }
+  .term-brand span {
+    display: none;
+  }
+  .term-resources {
+    gap: 16px;
+    padding: 10px 15px;
+  }
+  .resource-turns {
+    padding-inline: 16px;
+  }
+  .mayor-desk-button > span {
+    display: none;
+  }
+  .mayor-desk-button {
+    width: 43px;
+    padding: 10px;
+  }
+  .city-brief-column {
+    left: 20px;
+    width: 226px;
+  }
+  .policy-desk {
+    left: 266px;
+    right: 70px;
+  }
+  .city-view-switch {
+    left: 266px;
+  }
+  .desk-title {
+    padding: 10px 12px;
+  }
+  .desk-title h2 {
+    font-size: 16px;
+  }
+  .all-policies {
+    font-size: 9px !important;
+    padding: 8px;
+  }
+  .card-title {
+    font-size: 14px;
+  }
+  .term-policy-hand {
+    gap: 10px;
+  }
+}
+@media (max-height: 780px) and (min-width: 761px) {
+  .term-header {
+    height: 80px;
+    padding-block: 10px;
+  }
+  .city-brief-column {
+    top: 100px;
+    gap: 10px;
+  }
+  .city-brief-column .district-brief {
+    padding: 13px 16px;
+  }
+  .district-brief h1 {
+    font-size: 17px;
+    margin-bottom: 10px;
+  }
+  .brief-needs {
+    gap: 5px;
+  }
+  .brief-needs > div {
+    padding-bottom: 5px;
+  }
+  .district-brief > p {
+    margin: 9px 0;
+  }
+  .city-advice {
+    padding: 10px;
+  }
+  .city-advice-suggestion {
+    padding: 8px;
+    margin-top: 8px;
+  }
+  .desk-title {
+    padding: 9px 13px;
+  }
+  .city-view-switch {
+    top: 98px;
+  }
+}
+@media (max-width: 760px) {
+  .term-header {
+    height: 103px;
+    padding: 10px 12px;
+    gap: 8px;
+    align-items: flex-start;
+    background: linear-gradient(#d1d9c9ec, #d1d9c900);
+  }
+  .term-brand {
+    font-size: 16px !important;
+    padding: 10px 9px;
+    margin-top: 4px;
+    border-radius: 7px;
+    letter-spacing: -1px;
+  }
+  .term-resources {
+    margin: 0 0 0 auto;
+    gap: 12px;
+    padding: 9px 12px;
+    border-radius: 9px;
+  }
+  .term-resources b,
+  .term-resources .resource-score b {
+    font-size: 20px;
+  }
+  .term-resources small {
+    font-size: 7px;
+  }
+  .term-resources em {
+    font-size: 8px;
+  }
+  .resource-budget {
+    gap: 5px;
+  }
+  .resource-budget > svg {
+    width: 25px;
+    height: 25px;
+    padding: 5px;
+  }
+  .resource-score em {
+    display: none !important;
+  }
+  .resource-turns {
+    top: 69px;
+    left: 13px;
+    border: 1px solid #c9d6bc;
+    border-bottom: 2px solid #aebc9c;
+    border-radius: 6px;
+    background: #fff8e9eb;
+    padding: 5px 8px;
+    gap: 9px;
+  }
+  .resource-turns > small {
+    color: #507267;
+    font-size: 8px;
+  }
+  .resource-turns > span {
+    gap: 4px;
+  }
+  .resource-turns i {
+    width: 18px;
+    height: 18px;
+    font-size: 8px;
+    border-radius: 4px;
+  }
+  .mayor-desk-button {
+    width: 37px;
+    min-height: 37px;
+    margin-top: 5px;
+    padding: 8px;
+    border-radius: 7px;
+  }
+  .city-brief-column {
+    left: 13px;
+    top: 116px;
+    width: 191px;
+    gap: 9px;
+  }
+  .city-brief-column .district-brief {
+    padding: 11px 12px;
+    border-radius: 8px;
+    border-bottom-width: 2px;
+  }
+  .brief-location {
+    font-size: 10px;
+    margin-bottom: 5px;
+  }
+  .district-brief h1 {
+    font-size: 14px;
+    letter-spacing: -0.2px;
+    margin: 6px 0 8px;
+  }
+  .brief-needs {
+    gap: 4px;
+  }
+  .brief-needs > div {
+    padding-bottom: 4px;
+  }
+  .brief-needs span {
+    font-size: 8px;
+  }
+  .brief-needs b {
+    font-size: 16px;
+  }
+  .brief-needs small {
+    font-size: 7px;
+  }
+  .district-brief > p {
+    display: none;
+  }
+  .brief-link {
+    font-size: 8px !important;
+    padding-top: 7px;
+  }
+  .city-advice {
+    border-radius: 8px;
+    padding: 9px;
+    border-bottom-width: 2px;
+  }
+  .city-advice-heading {
+    gap: 6px;
+  }
+  .city-advice-heading > img {
+    width: 26px;
+    height: 30px;
+    border-radius: 5px;
+  }
+  .city-advice-heading strong {
+    font-size: 9px;
+  }
+  .city-advice-heading span {
+    font-size: 7px;
+    margin-top: 2px;
+  }
+  .city-advice-heading > button {
+    width: 27px;
+    min-height: 29px;
+  }
+  .city-advice-suggestion {
+    gap: 5px;
+    padding: 7px;
+    margin-top: 7px;
+  }
+  .city-advice-suggestion b {
+    font-size: 9px;
+  }
+  .city-advice-suggestion small {
+    font-size: 7px;
+  }
+  .city-advice-preview {
+    font-size: 8px;
+    gap: 2px;
+  }
+  .city-advice-preview svg {
+    width: 11px;
+  }
+  .policy-desk {
+    left: 13px;
+    right: 13px;
+    bottom: 18px;
+  }
+  .desk-title {
+    padding: 9px 10px;
+    border-radius: 8px;
+    gap: 7px;
+    margin-bottom: 6px;
+  }
+  .desk-title .term-kicker {
+    font-size: 7px;
+    letter-spacing: 0.8px;
+  }
+  .desk-title h2 {
+    font-size: 14px;
+    max-width: 220px;
+    line-height: 1.3;
+  }
+  .all-policies {
+    font-size: 8px !important;
+    padding: 7px;
+    max-width: 89px;
+  }
+  .term-policy-hand {
+    margin-inline: -13px;
+    padding: 7px 15px 7px;
+    gap: 11px;
+  }
+  .term-policy-hand .civic-card {
+    padding: 10px 12px;
+    flex-basis: 185px;
+  }
+  .card-title {
+    font-size: 14px;
+  }
+  .card-heading > b {
+    font-size: 14px;
+  }
+  .city-view-switch {
+    top: auto;
+    bottom: 320px;
+    left: auto;
+    right: 13px;
+  }
+}
+@media (max-width: 760px) and (max-height: 720px) {
+  .city-brief-column {
+    top: 111px;
+    width: 180px;
+  }
+  .district-brief h1 {
+    display: none;
+  }
+  .brief-needs {
+    margin-top: 9px;
+  }
+  .city-advice-suggestion {
+    padding: 6px;
+  }
+  .city-advice-heading > img {
+    display: none;
+  }
+  .city-advice-heading > button {
+    min-height: 24px;
+  }
+}
+@media (prefers-reduced-motion: reduce) {
+  .civic-card:hover:not(:disabled) {
+    transform: none;
+  }
+}
+
+@media (max-width: 760px) {
+  /* Keep comparison beside turn tokens instead of over the card hand. */
+  .city-view-switch {
+    top: 67px;
+    bottom: auto;
+    right: 13px;
+  }
+  .city-view-switch button {
+    min-height: 26px;
+    font-size: 8px;
+    padding: 5px 7px;
+  }
+  .city-advice-heading > button {
+    width: 33px;
+    min-height: 34px;
+  }
+  .mayor-experience[data-guide-active='true'] .district-brief h1 {
+    display: none;
+  }
+  .mayor-experience[data-guide-active='true'] .brief-needs {
+    margin-top: 10px;
+  }
+}
+@media (max-width: 420px) {
+  .resource-turns > small {
+    display: none;
+  }
+}

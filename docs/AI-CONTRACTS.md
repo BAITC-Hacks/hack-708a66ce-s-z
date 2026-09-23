@@ -44,3 +44,11 @@ All choices preserve a feasible five-decision completion. These heuristics are n
 Mock tests cover provider envelopes, invalid IDs/probabilities, low confidence, ambiguity, malformed narration and provider failures. Browser tests cover no automatic adoption, malformed alternatives, stale replies, and unchanged scores. No live provider call has been verified without a supplied key. Schema validation cannot establish that generated prose is true; the numeric panels remain the source of truth.
 
 References: [Jev typed primitives](https://typesafe.ai/blog/introducing-system-one-models-and-jev), [Jev API](https://docs.typesafe.ai/api), [models](https://docs.typesafe.ai/models), [OpenAI Responses](https://developers.openai.com/api/docs/guides/text).
+
+## Optional key connection
+
+The localhost app offers an optional connection during onboarding and in the advisor. `GET /api/session-credentials` returns provider status and a random anti-CSRF token, never a key. `POST` requires the same local Origin/Host, the token, JSON content and a body no larger than 2 KiB. The server rejects non-loopback clients, cross-site reads, unknown fields and malformed keys. Vite preserves the browser Host when forwarding `/api` so these checks also work during development.
+
+Session credentials are private fields in server memory. They override an existing environment key while connected; disconnect clears session overrides and leaves `.env` configuration intact. Forms clear credentials on submission/collapse. Nothing is written to browser storage, disk, scenario JSON or the bundled HTML. A key is not verified with a paid provider call on connection. The first explicit advice request contacts the configured provider; failures remain visible and fall back to local calculation.
+
+The `file://` game neither asks for a usable secret nor contacts the endpoint: it explains how to run the localhost app. Automated tests use dummy values or mocked providers, including HTTP-level origin, CSRF, redaction, body-size, disconnect and restart checks.

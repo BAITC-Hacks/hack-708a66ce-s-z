@@ -1,5 +1,7 @@
 # QALA game experience redesign
 
+> Historical design record. The active release uses the IsoCity game experience described in [README](../README.md), [the final-hour plan](FINAL-HOUR.md), and [the current city integration](ISOCITY.md). Earlier renderer, palette and map-first proposals below are retained as project history.
+
 Reading this as: an isometric city strategy game for first-time players, with a lived-in Astana and tactile controls embedded in the world.
 
 ## Audit of version one

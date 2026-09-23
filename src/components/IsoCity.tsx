@@ -1,15 +1,12 @@
 import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import { LocateFixed, Minus, Plus } from 'lucide-react';
 import {
-  drawGreenBaseTile,
-  drawGreyBaseTile,
   drawRoad,
   getSpriteRenderInfo,
   selectSpriteSource,
   getActiveSpritePack,
   loadSpriteImage,
   gridToScreen,
-  screenToGrid,
   useVehicleSystems,
   TILE_WIDTH,
   TILE_HEIGHT,
@@ -22,6 +19,7 @@ import {
   ASTANA_DISTRICTS,
   ASTANA_LANDMARKS,
   ASTANA_SIZE,
+  ASTANA_VIEW_CENTER,
   createAstanaMap,
 } from '../game/astanaMap';
 import { DISTRICTS, MEASURES, type DistrictId, type Lang } from '../game/data';
@@ -118,6 +116,7 @@ export function IsoCity({
     buildings: HTMLCanvasElement;
     originX: number;
     originY: number;
+    pixelScale: number;
   } | null>(null);
   const state = useRef({ selected, onSelect, night, paused, reduced, lang });
   state.current = { selected, onSelect, night, paused, reduced, lang };
@@ -151,6 +150,8 @@ export function IsoCity({
   motionApi.current = motion;
   const pointers = useRef(new Map<number, { x: number; y: number }>()),
     gesture = useRef({ x: 0, y: 0, moved: false, distance: 0 });
+  const selectionBlockedUntil = useRef(0);
+  const markerPress = useRef({ x: 0, y: 0 });
   const positionMarkers = useCallback(() => {
     const { offset, zoom } = camera.current;
     for (const [id, d] of Object.entries(ASTANA_DISTRICTS)) {
@@ -234,7 +235,7 @@ export function IsoCity({
         Math.max(200, bottom - top) / (ASTANA_SIZE * TILE_HEIGHT + 140),
       ),
     );
-    const p = center(23.5, 23.5);
+    const p = center((ASTANA_SIZE - 1) / 2, (ASTANA_SIZE - 1) / 2);
     camera.current = {
       zoom,
       offset: { x: (left + right) / 2 - p.x * zoom, y: (top + bottom) / 2 - p.y * zoom },
@@ -326,7 +327,7 @@ export function IsoCity({
           canvas.height = Math.round(height * dimensions.current.dpr);
         }
       // Begin close enough to discover street life; the overview control fits all five districts.
-      const p = center(23, 24),
+      const p = center(ASTANA_VIEW_CENTER.x, ASTANA_VIEW_CENTER.y),
         zoom = Math.max(0.48, Math.min(0.78, width / 2000));
       camera.current = {
         zoom,
@@ -343,8 +344,15 @@ export function IsoCity({
     resize();
     const wheel = (event: WheelEvent) => {
       event.preventDefault();
+      event.stopPropagation();
+      selectionBlockedUntil.current = performance.now() + 350;
+      gesture.current.moved = true;
+      if (document.querySelector('dialog[open]')) return;
       const rect = element.getBoundingClientRect();
-      zoomAt(event.deltaY > 0 ? -0.07 : 0.07, event.clientX - rect.left, event.clientY - rect.top);
+      const pixels =
+        event.deltaY * (event.deltaMode === 1 ? 16 : event.deltaMode === 2 ? rect.height : 1);
+      const amount = Math.max(-0.12, Math.min(0.12, -pixels * (event.ctrlKey ? 0.006 : 0.0013)));
+      zoomAt(amount, event.clientX - rect.left, event.clientY - rect.top);
     };
     element.addEventListener('wheel', wheel, { passive: false });
     return () => {
@@ -369,12 +377,16 @@ export function IsoCity({
       originY = 190;
     const ground = document.createElement('canvas'),
       buildings = document.createElement('canvas');
+    // A larger city should not multiply backing-store memory. Cache at at most 3200px wide.
+    const pixelScale = Math.min(1, 3200 / (ASTANA_SIZE * TILE_WIDTH + 200));
     for (const canvas of [ground, buildings]) {
-      canvas.width = ASTANA_SIZE * TILE_WIDTH + 200;
-      canvas.height = Math.ceil(ASTANA_SIZE * TILE_HEIGHT + 300);
+      canvas.width = Math.ceil((ASTANA_SIZE * TILE_WIDTH + 200) * pixelScale);
+      canvas.height = Math.ceil((ASTANA_SIZE * TILE_HEIGHT + 300) * pixelScale);
     }
     const g = ground.getContext('2d')!,
       b = buildings.getContext('2d')!;
+    g.scale(pixelScale, pixelScale);
+    b.scale(pixelScale, pixelScale);
     const mergeCache = new Map<string, ReturnType<typeof analyzeMergedRoad>>();
     const hasRoad = (x: number, y: number) =>
       ['road', 'bridge'].includes(map.grid[y]?.[x]?.building.type ?? '');
@@ -396,7 +408,7 @@ export function IsoCity({
           surface = map.surfaces[y][x];
         const occupied = map.footprint.has(`${x},${y}`);
         if (surface === 'water') {
-          diamond(g, p.screenX, p.screenY, '#54a8b7');
+          diamond(g, p.screenX, p.screenY, '#79b9ba');
           if (water) {
             g.save();
             g.beginPath();
@@ -406,13 +418,15 @@ export function IsoCity({
             g.lineTo(p.screenX, p.screenY + TILE_HEIGHT / 2);
             g.closePath();
             g.clip();
-            g.globalAlpha = 0.35;
+            g.globalAlpha = 0.16;
             g.drawImage(water, p.screenX, p.screenY, 64, TILE_HEIGHT);
             g.restore();
           }
-        } else if (surface === 'plaza') diamond(g, p.screenX, p.screenY, '#dad8bd');
-        else if (occupied) drawGreyBaseTile(g, p.screenX, p.screenY, tile, 0.5);
-        else drawGreenBaseTile(g, p.screenX, p.screenY, tile, 0.5);
+        } else if (surface === 'plaza') diamond(g, p.screenX, p.screenY, '#e5dcc4');
+        else if (surface === 'quay') diamond(g, p.screenX, p.screenY, '#d5d4b6');
+        else if (surface === 'garden') diamond(g, p.screenX, p.screenY, '#a9bd89');
+        else if (occupied) diamond(g, p.screenX, p.screenY, '#d8d4c3');
+        else diamond(g, p.screenX, p.screenY, '#b4c89c');
         if (hasRoad(x, y)) {
           drawRoad(g, p.screenX, p.screenY, x, y, 1, {
             hasRoad,
@@ -464,6 +478,29 @@ export function IsoCity({
           },
         });
       }
+    // Small fountain courts articulate the long pedestrian axis without introducing extra UI.
+    for (const [x, y] of [
+      [20, 30],
+      [30.5, 32.5],
+    ]) {
+      const p = center(x, y);
+      g.fillStyle = '#f3e7c7';
+      g.strokeStyle = '#d0c4a7';
+      g.lineWidth = 2;
+      g.beginPath();
+      g.ellipse(p.x + originX, p.y + originY, 35, 18, 0, 0, Math.PI * 2);
+      g.fill();
+      g.stroke();
+      g.fillStyle = '#82c8ca';
+      g.beginPath();
+      g.ellipse(p.x + originX, p.y + originY, 22, 10, 0, 0, Math.PI * 2);
+      g.fill();
+      g.strokeStyle = '#e5f1e7';
+      g.lineWidth = 2;
+      g.beginPath();
+      g.ellipse(p.x + originX, p.y + originY, 12, 5, 0, 0, Math.PI * 2);
+      g.stroke();
+    }
     const landmarkSheet = images.current.get(landmarkAtlas);
     if (landmarkSheet)
       for (const landmark of ASTANA_LANDMARKS) {
@@ -563,7 +600,7 @@ export function IsoCity({
       g.stroke();
       g.restore();
     }
-    layers.current = { ground, buildings, originX, originY };
+    layers.current = { ground, buildings, originX, originY, pixelScale };
     gridVersionRef.current++;
     dirty.current = true;
     motionRefs.carsRef.current = [];
@@ -616,7 +653,13 @@ export function IsoCity({
           ctx.setTransform(1, 0, 0, 1, 0, 0);
           ctx.clearRect(0, 0, canvas!.width, canvas!.height);
           ctx.setTransform(dpr * zoom, 0, 0, dpr * zoom, offset.x * dpr, offset.y * dpr);
-          ctx.drawImage(cache, -layer.originX, -layer.originY);
+          ctx.drawImage(
+            cache,
+            -layer.originX,
+            -layer.originY,
+            cache.width / layer.pixelScale,
+            cache.height / layer.pixelScale,
+          );
         }
         dirty.current = false;
         positionMarkers();
@@ -646,10 +689,15 @@ export function IsoCity({
       className={`isocity-world ${night ? 'isocity-night' : ''}`}
       data-testid="city-world"
       onPointerDown={(event) => {
-        if ((event.target as HTMLElement).closest('button')) return;
+        if (event.button !== 0 || (event.target as HTMLElement).closest('button')) return;
         pointers.current.set(event.pointerId, { x: event.clientX, y: event.clientY });
         host.current?.setPointerCapture(event.pointerId);
-        gesture.current = { x: event.clientX, y: event.clientY, moved: false, distance: 0 };
+        gesture.current = {
+          x: event.clientX,
+          y: event.clientY,
+          moved: pointers.current.size > 1,
+          distance: 0,
+        };
       }}
       onPointerMove={(event) => {
         const previous = pointers.current.get(event.pointerId);
@@ -658,16 +706,25 @@ export function IsoCity({
         if (pointers.current.size === 2) {
           const [a, b] = [...pointers.current.values()],
             distance = Math.hypot(a.x - b.x, a.y - b.y);
-          if (gesture.current.distance) zoomAt((distance - gesture.current.distance) * 0.004);
+          if (gesture.current.distance) {
+            const rect = host.current!.getBoundingClientRect();
+            zoomAt(
+              (distance - gesture.current.distance) * 0.004,
+              (a.x + b.x) / 2 - rect.left,
+              (a.y + b.y) / 2 - rect.top,
+            );
+          }
           gesture.current.distance = distance;
           gesture.current.moved = true;
+          selectionBlockedUntil.current = performance.now() + 350;
           return;
         }
         const dx = event.clientX - previous.x,
           dy = event.clientY - previous.y;
-        if (Math.hypot(event.clientX - gesture.current.x, event.clientY - gesture.current.y) > 4)
+        if (Math.hypot(event.clientX - gesture.current.x, event.clientY - gesture.current.y) > 6)
           gesture.current.moved = true;
         if (gesture.current.moved) {
+          selectionBlockedUntil.current = performance.now() + 350;
           camera.current.offset.x += dx;
           camera.current.offset.y += dy;
           dirty.current = true;
@@ -677,31 +734,17 @@ export function IsoCity({
       onPointerUp={(event) => {
         if (!pointers.current.has(event.pointerId)) return;
         pointers.current.delete(event.pointerId);
-        if (!gesture.current.moved) {
-          const rect = host.current!.getBoundingClientRect(),
-            c = camera.current;
-          const point = screenToGrid(
-            (event.clientX - rect.left - c.offset.x) / c.zoom,
-            (event.clientY - rect.top - c.offset.y) / c.zoom,
-            0,
-            0,
-          );
-          if (
-            point.gridX >= 0 &&
-            point.gridY >= 0 &&
-            point.gridX < ASTANA_SIZE &&
-            point.gridY < ASTANA_SIZE
-          ) {
-            const closest = Object.entries(ASTANA_DISTRICTS).sort(
-              ([, a], [, b]) =>
-                Math.hypot(a.x - point.gridX, a.y - point.gridY) -
-                Math.hypot(b.x - point.gridX, b.y - point.gridY),
-            )[0];
-            onSelect(closest[0] as DistrictId);
-          }
-        }
+        if (gesture.current.moved) selectionBlockedUntil.current = performance.now() + 350;
+        if (host.current?.hasPointerCapture(event.pointerId))
+          host.current.releasePointerCapture(event.pointerId);
+        gesture.current.distance = 0;
+        // Exploring the canvas never changes the policy target. Selection is explicit on named markers.
       }}
-      onPointerCancel={(event) => pointers.current.delete(event.pointerId)}
+      onPointerCancel={(event) => {
+        pointers.current.delete(event.pointerId);
+        selectionBlockedUntil.current = performance.now() + 350;
+      }}
+      onLostPointerCapture={(event) => pointers.current.delete(event.pointerId)}
     >
       <canvas
         ref={terrainView}
@@ -733,7 +776,27 @@ export function IsoCity({
               markers.current[district.id] = element;
             }}
             className={`isocity-marker ${selected === district.id ? 'is-selected' : ''}`}
-            onClick={() => onSelect(district.id)}
+            onPointerDown={(event) => {
+              markerPress.current = { x: event.clientX, y: event.clientY };
+            }}
+            onPointerMove={(event) => {
+              if (
+                event.buttons &&
+                Math.hypot(
+                  event.clientX - markerPress.current.x,
+                  event.clientY - markerPress.current.y,
+                ) > 6
+              )
+                selectionBlockedUntil.current = performance.now() + 350;
+            }}
+            onClick={(event) => {
+              event.stopPropagation();
+              if (event.detail > 0 && performance.now() < selectionBlockedUntil.current) {
+                event.preventDefault();
+                return;
+              }
+              onSelect(district.id);
+            }}
             aria-pressed={selected === district.id}
             aria-label={`${district.name[lang]} · ${result.districtScores[district.id].toFixed(1)}`}
           >
@@ -764,7 +827,9 @@ export function IsoCity({
           </span>
           <strong>{latestMeasure.name[lang]}</strong>
           <small>
-            {DISTRICTS.find((district) => district.id === latestChange.district)?.name[lang]}
+            {latestMeasure.scope === 'city'
+              ? tx(lang, 'All five districts', 'Все пять районов', 'Барлық бес аудан')
+              : DISTRICTS.find((district) => district.id === latestChange.district)?.name[lang]}
           </small>
         </div>
       )}

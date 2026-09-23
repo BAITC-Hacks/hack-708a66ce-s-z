@@ -46,7 +46,7 @@ Total: 2,468,636 bytes before bundling. Assets are imported through Vite and emb
 3. Kept the default `sprites4` pack. Removed unbundled alternate themes and optional sheet URLs, retaining the upstream fallback to the base sheet. The imported pack supports base, dense, modern, parks, and services variants.
 4. Replaced root-relative sprite paths with bundled WebP imports. The unused aircraft image constant is empty because QALA does not load aircraft sprites.
 5. Preserved upstream coordinate overlap corrections, sprite scale/offset maps, construction-independent source selection, road junctions/sidewalks/traffic lights, vehicle drawing, and pedestrian animation algorithms.
-6. Tuned ambient rendering for the 48×48 overview: cars remain visible down to zoom 0.25, pedestrians to 0.30. Counts are capped at 90 cars / 120 pedestrians on desktop and 36 cars / 48 pedestrians on mobile. Movement and drawing algorithms remain upstream.
+6. Tuned ambient rendering for the 64×64 city: cars remain visible down to zoom 0.25, pedestrians to 0.30. Counts are capped at 90 cars / 120 pedestrians on desktop and 36 cars / 48 pedestrians on mobile. Movement and drawing algorithms remain upstream.
 7. Added in-flight sprite loading deduplication so city rendering and policy cards share the same image decode and chroma-key pass. `IsoCityPolicyArt` uses the same upstream sprite selection/crop rules for school, hospital, park and utility assets; non-building policies keep descriptive symbols.
 8. Preserved the upstream MIT notice and documented the pinned source. Formatting may be normalized by the QALA formatter.
 

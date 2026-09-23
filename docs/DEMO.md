@@ -1,6 +1,6 @@
 # Two-minute judge walkthrough / Демо / Демо
 
-Use `play/QALA.html` with networking disabled to demonstrate portability. Or use `npm start` at localhost:8789 with provider keys configured to demonstrate optional Jev selection and LLM narration. In the game, use Mayor’s desk → AI advisor.
+Use `play/QALA.html` with networking disabled to demonstrate portability. Or run `npm ci` then `npm run demo` and open localhost:8789. The optional connection in onboarding or the advisor accepts a session key. On the city screen, Aida’s suggestion opens a free policy preview; Ask Aida opens the full advisor. Demonstrate live Jev/LLM only after verifying it with your own key.
 
 | Time | Action                                              | What to say                                                                       |
 | ---- | --------------------------------------------------- | --------------------------------------------------------------------------------- |

@@ -3,8 +3,11 @@
   inset: 0;
   overflow: hidden;
   touch-action: none;
-  background: #19354b;
+  background: #bfcbb1;
   isolation: isolate;
+  user-select: none;
+  -webkit-user-select: none;
+  overscroll-behavior: contain;
 }
 .isocity-world > canvas {
   position: absolute;
@@ -33,10 +36,10 @@
   pointer-events: none;
   background: linear-gradient(
     180deg,
-    rgba(17, 42, 62, 0.25),
+    rgba(255, 247, 218, 0.12),
     transparent 25%,
-    transparent 65%,
-    rgba(14, 39, 58, 0.12)
+    transparent 70%,
+    rgba(172, 177, 140, 0.08)
   );
 }
 .isocity-fallback {
@@ -62,10 +65,10 @@
   padding: 9px 13px;
   min-width: 95px;
   min-height: 44px;
-  border: 1px solid #ffffff38;
+  border: 1px solid #d8d2b9;
   border-radius: 9px;
-  background: #17384bde;
-  color: #f3f0dc;
+  background: #fff8e9ed;
+  color: #153e43;
   backdrop-filter: blur(8px);
   box-shadow: 0 5px 16px #0a233529;
   font:
@@ -85,12 +88,12 @@
 .isocity-marker-pin {
   width: 7px;
   height: 7px;
-  background: #e6e2c2;
+  background: #498378;
   transform: rotate(45deg);
 }
 .isocity-marker.is-selected {
-  background: #f0d890;
-  border-color: #fff0b8;
+  background: #f4be53;
+  border-color: #ffe0a0;
   color: #253d49;
   box-shadow:
     0 0 0 3px #ffe4a224,
@@ -109,10 +112,10 @@
   bottom: 44px;
   display: flex;
   flex-direction: column;
-  border: 1px solid #ffffff40;
+  border: 1px solid #d3ceb9;
   border-radius: 10px;
   overflow: hidden;
-  background: #15354adf;
+  background: #fff8e9ee;
 }
 .isocity-controls button {
   display: grid;
@@ -122,15 +125,15 @@
   padding: 0;
   border: 0;
   border-radius: 0;
-  color: #f6e7bd;
+  color: #153e43;
   background: transparent;
   cursor: pointer;
 }
 .isocity-controls button + button {
-  border-top: 1px solid #ffffff25;
+  border-top: 1px solid #d3ceb966;
 }
 .isocity-controls button:hover {
-  background: #ffffff18;
+  background: #e6ead9;
 }
 .isocity-marker:focus-visible,
 .isocity-controls button:focus-visible {
@@ -143,12 +146,12 @@
   left: 34px;
   bottom: 18px;
   max-width: 280px;
-  color: #e7eee4b8;
+  color: #294e46;
   font:
     9px/1.5 'Manrope Variable',
     sans-serif;
   pointer-events: none;
-  text-shadow: 0 1px 4px #102c42;
+  text-shadow: 0 1px 3px #f9f6e7;
 }
 .isocity-loading {
   position: absolute;
@@ -159,8 +162,8 @@
   gap: 18px;
   align-items: center;
   justify-content: center;
-  color: #ece8d9;
-  background: #19354b;
+  color: #153e43;
+  background: #bfcbb1;
 }
 .isocity-loading b {
   font:
@@ -198,7 +201,8 @@
   }
   .isocity-controls {
     right: 12px;
-    bottom: 295px;
+    top: 120px;
+    bottom: auto;
   }
   .isocity-controls button {
     width: 42px;
@@ -299,4 +303,15 @@
   transform: rotate(var(--isocity-leader-angle));
   transform-origin: var(--isocity-leader-origin);
   pointer-events: none;
+}
+
+.isocity-night {
+  background: #183738;
+}
+.isocity-night .isocity-atmosphere {
+  background: linear-gradient(180deg, #1736481f, transparent 35%, #172e3718);
+}
+.isocity-night .isocity-credit {
+  color: #eef2dd;
+  text-shadow: 0 1px 3px #143233;
 }

@@ -73,6 +73,7 @@ import { MayorOnboarding, useMayorOnboarding } from './MayorOnboarding';
 import art from '../assets/astana-key-art.png';
 import advisorArt from '../assets/advisor-aida.png';
 import { IsoCityPolicyArt } from './IsoCityPolicyArt';
+import { AdvisorConnection } from './AdvisorConnection';
 const ICONS = {
   transport: Bus,
   ecology: Leaf,
@@ -167,6 +168,19 @@ export function MayorExperience(p: Props) {
     [decisions, lang, goal],
   );
   const answer = advice ?? local;
+  const citySuggestion =
+    answer.recommendation && !moveIssues(decisions, answer.recommendation.decision).length
+      ? answer.recommendation
+      : local.recommendation;
+  const cityAdviceMode = citySuggestion === answer.recommendation ? answer.mode : 'local';
+  const cityAdviceSource =
+    cityAdviceMode === 'local'
+      ? t('Локальный расчёт', 'Local calculation', 'Жергілікті есеп')
+      : cityAdviceMode === 'hybrid'
+        ? 'Jev + AI'
+        : cityAdviceMode === 'jev'
+          ? 'Jev'
+          : 'AI';
   const achieved = milestones(result);
   const featuredDeltas = change
     ? change.metricDeltas.filter((d) => d.after < d.before || d.districtId === selected).slice(0, 3)
@@ -422,6 +436,7 @@ export function MayorExperience(p: Props) {
       className={`mayor-experience ${night ? 'term-night' : ''}`}
       data-phase={phase}
       data-review={!!draft}
+      data-guide-active={guide.active && decisions.length < 5}
     >
       <IsoCity
         selected={selected}
@@ -496,52 +511,113 @@ export function MayorExperience(p: Props) {
           <span>{t('Кабинет', 'Mayor’s desk', 'Кабинет')}</span>
         </button>
       </header>
-      <section className="district-brief">
-        <div className="brief-location">
-          <MapPin size={14} />
-          <select
-            aria-label={t('Выбрать район', 'Select district', 'Ауданды таңдау')}
-            value={selected}
-            onChange={(e) => select(e.target.value as DistrictId)}
-          >
-            {DISTRICTS.map((d) => (
-              <option key={d.id} value={d.id}>
-                {d.name[lang]}
-              </option>
+      <div className="city-brief-column">
+        <section className="district-brief">
+          <div className="brief-location">
+            <MapPin size={14} />
+            <select
+              aria-label={t('Выбрать район', 'Select district', 'Ауданды таңдау')}
+              value={selected}
+              onWheelCapture={(e) => {
+                e.currentTarget.blur();
+                e.stopPropagation();
+              }}
+              onChange={(e) => select(e.target.value as DistrictId)}
+            >
+              {DISTRICTS.map((d) => (
+                <option key={d.id} value={d.id}>
+                  {d.name[lang]}
+                </option>
+              ))}
+            </select>
+            <ChevronDown size={13} />
+          </div>
+          <h1>{district.profile[lang]}</h1>
+          <div className="brief-needs">
+            {needs.map((k) => (
+              <div key={k}>
+                <span>{INDICATORS[k][lang]}</span>
+                <b className={result.metrics[selected][k] < 40 ? 'urgent' : ''}>
+                  {result.metrics[selected][k].toFixed(0)}
+                  <small>/100</small>
+                </b>
+              </div>
             ))}
-          </select>
-          <ChevronDown size={13} />
-        </div>
-        <h1>{district.profile[lang]}</h1>
-        <div className="brief-needs">
-          {needs.map((k) => (
-            <div key={k}>
-              <span>{INDICATORS[k][lang]}</span>
-              <b className={result.metrics[selected][k] < 40 ? 'urgent' : ''}>
-                {result.metrics[selected][k].toFixed(0)}
-                <small>/100</small>
-              </b>
+          </div>
+          <p>
+            {result.critical.some((c) => c.districtId === selected)
+              ? t(
+                  'Показатели ниже 40 требуют внимания.',
+                  'Indicators below 40 need attention.',
+                  '40-тан төмен көрсеткіштерге назар аудару қажет.',
+                )
+              : t(
+                  'Сравните, где ограниченный бюджет принесёт больше пользы.',
+                  'Consider where your limited budget can help most.',
+                  'Шектеулі бюджеттің қайда көбірек пайда әкелетінін салыстырыңыз.',
+                )}
+          </p>
+          <button className="brief-link" onClick={() => openLayer('district')}>
+            {t('Узнать район', 'Meet the district', 'Ауданды таныңыз')}
+            <ArrowUpRight size={15} />
+          </button>
+        </section>
+        <aside
+          className="city-advice"
+          data-testid="city-advice"
+          aria-label={t(
+            'Совет на следующий ход',
+            'Advice for your next move',
+            'Келесі қадамға кеңес',
+          )}
+        >
+          <div className="city-advice-heading">
+            <img src={advisorArt} alt="" />
+            <div>
+              <strong>{t('Айда советует', 'Aida suggests', 'Айда ұсынады')}</strong>
+              <span>{cityAdviceSource}</span>
             </div>
-          ))}
-        </div>
-        <p>
-          {result.critical.some((c) => c.districtId === selected)
-            ? t(
-                'Показатели ниже 40 требуют внимания.',
-                'Indicators below 40 need attention.',
-                '40-тан төмен көрсеткіштерге назар аудару қажет.',
-              )
-            : t(
-                'Сравните, где ограниченный бюджет принесёт больше пользы.',
-                'Consider where your limited budget can help most.',
-                'Шектеулі бюджеттің қайда көбірек пайда әкелетінін салыстырыңыз.',
+            <button
+              onClick={() => openLayer('advisor')}
+              aria-label={t('Спросить Айду', 'Ask Aida', 'Айдадан сұрау')}
+              title={t('Спросить Айду', 'Ask Aida', 'Айдадан сұрау')}
+            >
+              <Sparkles size={16} />
+            </button>
+          </div>
+          {citySuggestion ? (
+            <button
+              className="city-advice-suggestion"
+              data-testid="preview-suggestion"
+              onClick={() =>
+                openPolicy(
+                  MEASURES.find((m) => m.id === citySuggestion.decision.measureId)!,
+                  citySuggestion.decision.districtId,
+                )
+              }
+            >
+              <span>
+                <b>{citySuggestion.name}</b>
+                <small>
+                  {citySuggestion.district} · {signed(citySuggestion.gain)} QoL
+                </small>
+              </span>
+              <span className="city-advice-preview">
+                {t('Прогноз', 'Preview', 'Болжам')}
+                <ArrowRight size={14} />
+              </span>
+            </button>
+          ) : (
+            <p>
+              {t(
+                'Пять решений приняты. Теперь сравним результат с началом.',
+                'Five decisions made. Let’s see how the city changed.',
+                'Бес шешім қабылданды. Қаланың өзгерісін көрейік.',
               )}
-        </p>
-        <button className="brief-link" onClick={() => openLayer('district')}>
-          {t('Узнать район', 'Meet the district', 'Ауданды таныңыз')}
-          <ArrowUpRight size={15} />
-        </button>
-      </section>
+            </p>
+          )}
+        </aside>
+      </div>
       {decisions.length > 0 && (
         <div
           className="city-view-switch"
@@ -680,6 +756,10 @@ export function MayorExperience(p: Props) {
                   <select
                     aria-label={t('Район для меры', 'Policy district', 'Шара ауданы')}
                     value={selected}
+                    onWheelCapture={(e) => {
+                      e.currentTarget.blur();
+                      e.stopPropagation();
+                    }}
                     onChange={(e) => select(e.target.value as DistrictId)}
                   >
                     {DISTRICTS.map((d) => (
@@ -1034,6 +1114,7 @@ export function MayorExperience(p: Props) {
                   'Сандар есептелген. Кеңесші таңдауды түсіндіреді; соңғы шешім өзіңізде.',
                 )}
               </p>
+              <AdvisorConnection lang={lang} />
               <label className="advice-label">
                 {t('Что для вас важнее?', 'What matters most?', 'Сіз үшін не маңызды?')}
                 <select value={goal} onChange={(e) => setGoal(e.target.value as Goal)}>

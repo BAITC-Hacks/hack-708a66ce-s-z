@@ -1,5 +1,7 @@
 # QALA — build plan
 
+> Historical design record. The active release uses the IsoCity game experience described in [README](../README.md), [the final-hour plan](FINAL-HOUR.md), and [the current city integration](ISOCITY.md). Earlier renderer, palette and map-first proposals below are retained as project history.
+
 ## Delivered checkpoint
 
 The foundation and full playable core are implemented: exact scoring, five turns, Phaser isometric city, all 14 cards, local explanations, optional LLM endpoint, scenario archive, JSON export, RU/EN/KZ, single-file offline build, real screenshots and trilingual pitch documentation. The reference result is reproduced. Unit and Chromium browser checks pass locally.

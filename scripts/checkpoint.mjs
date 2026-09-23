@@ -24,6 +24,7 @@ if (changed) {
     '.gitignore',
     '.env.example',
     '.github',
+    'AGENTS.md',
     'README.md',
     'README.ru.md',
     'README.kk.md',

@@ -7,35 +7,38 @@ import {
 import type { DistrictId } from './data';
 import type { Decision } from './engine';
 
-export const ASTANA_SIZE = 48;
+export const ASTANA_SIZE = 64;
+export const ASTANA_VIEW_CENTER = { x: 31, y: 32 };
 export const ASTANA_DISTRICTS: Record<DistrictId, { x: number; y: number }> = {
-  saryarka: { x: 8, y: 6 },
-  baikonur: { x: 26, y: 6 },
-  almaty: { x: 41, y: 17 },
-  nura: { x: 9, y: 33 },
-  esil: { x: 24, y: 39 },
+  saryarka: { x: 16, y: 14 },
+  baikonur: { x: 34, y: 14 },
+  almaty: { x: 49, y: 25 },
+  nura: { x: 17, y: 41 },
+  esil: { x: 32, y: 47 },
 };
 export const ASTANA_LANDMARKS = [
-  { x: 7, y: 21, frame: 2, name: 'Khan Shatyr · Хан Шатыр', width: 205 },
-  { x: 19, y: 24, frame: 0, name: 'Baiterek · Бәйтерек', width: 196 },
-  { x: 26.3, y: 25, frame: 1, name: 'Aq Orda · Ақорда', width: 190 },
-  { x: 35, y: 26, frame: 4, name: 'Palace of Peace · Бейбітшілік сарайы', width: 170 },
-  { x: 40, y: 24, frame: 3, name: 'Hazret Sultan · Әзірет Сұлтан', width: 190 },
-  { x: 13, y: 43, frame: 5, name: 'Nur Alem · Нұр Әлем', width: 180 },
+  { x: 15, y: 29, frame: 2, name: 'Khan Shatyr · Хан Шатыр', width: 205 },
+  { x: 27, y: 32, frame: 0, name: 'Baiterek · Бәйтерек', width: 196 },
+  { x: 34.3, y: 33, frame: 1, name: 'Aq Orda · Ақорда', width: 190 },
+  { x: 43, y: 34, frame: 4, name: 'Palace of Peace · Бейбітшілік сарайы', width: 170 },
+  { x: 48, y: 32, frame: 3, name: 'Hazret Sultan · Әзірет Сұлтан', width: 190 },
+  { x: 21, y: 51, frame: 5, name: 'Nur Alem · Нұр Әлем', width: 180 },
 ];
 const river = [
-  [-2, 10],
-  [8, 11],
-  [16, 11],
-  [22, 14],
-  [28, 17],
-  [32, 20],
-  [31, 23],
-  [30, 27],
-  [30, 31],
-  [35, 36],
-  [42, 41],
-  [50, 45],
+  [-3, 17],
+  [6, 18],
+  [16, 19],
+  [24, 19],
+  [30, 22],
+  [36, 25],
+  [40, 28],
+  [39, 31],
+  [38, 35],
+  [38, 39],
+  [43, 44],
+  [50, 49],
+  [58, 53],
+  [68, 57],
 ];
 const hash = (x: number, y: number) => Math.abs(((x * 73856093) ^ (y * 19349663)) >>> 0);
 const segmentDistance = (x: number, y: number, a: number[], b: number[]) => {
@@ -46,10 +49,82 @@ const segmentDistance = (x: number, y: number, a: number[], b: number[]) => {
 };
 export const distanceToRiver = (x: number, y: number) =>
   Math.min(...river.slice(1).map((b, i) => segmentDistance(x, y, river[i], b)));
-const promenade = (x: number, y: number) => segmentDistance(x, y, [7, 21], [27, 25]) < 1.65;
-const reserved = (x: number, y: number) =>
-  promenade(x, y) ||
-  ASTANA_LANDMARKS.some((l) => Math.abs(x - l.x) < 2.25 && Math.abs(y - l.y) < 2.25);
+const axisDistance = (x: number, y: number) => segmentDistance(x, y, [15, 29], [35, 33]);
+const promenade = (x: number, y: number) => axisDistance(x, y) < 1.85;
+const landmarkPlaza = (x: number, y: number) =>
+  ASTANA_LANDMARKS.some((l) => Math.abs(x - l.x) < 2.35 && Math.abs(y - l.y) < 2.35);
+const reserved = (x: number, y: number) => promenade(x, y) || landmarkPlaza(x, y);
+const civicPark = (x: number, y: number) =>
+  ((x - 28) / 5) ** 2 + ((y - 40) / 3.3) ** 2 < 1 ||
+  ((x - 9) / 3) ** 2 + ((y - 25) / 4) ** 2 < 1 ||
+  ((x - 47) / 4) ** 2 + ((y - 39) / 3) ** 2 < 1;
+export type AstanaNeighbourhood =
+  | 'greenbelt'
+  | 'old-town'
+  | 'civic'
+  | 'right-bank'
+  | 'garden'
+  | 'expo'
+  | 'industrial'
+  | 'residential';
+/** Illustrative urban character, deliberately separate from the five scoring districts. */
+export function neighbourhoodAt(x: number, y: number): AstanaNeighbourhood {
+  if (x < 4 || y < 4 || x > 59 || y > 59) return 'greenbelt';
+  if (x > 51 && y < 18) return 'industrial';
+  if (y < 23) return 'old-town';
+  if (x >= 14 && x <= 34 && y >= 46 && y <= 57) return 'expo';
+  if (x >= 14 && x <= 37 && y >= 26 && y <= 39) return 'civic';
+  if (x < 23 && y > 36) return 'garden';
+  if (x > 41 && y < 44) return 'right-bank';
+  return 'residential';
+}
+const buildingPalette: Record<AstanaNeighbourhood, BuildingType[]> = {
+  greenbelt: [],
+  'old-town': [
+    'apartment_low',
+    'apartment_low',
+    'house_medium',
+    'house_medium',
+    'shop_small',
+    'shop_medium',
+    'office_low',
+  ],
+  civic: [
+    'office_high',
+    'apartment_high',
+    'office_low',
+    'office_high',
+    'apartment_high',
+    'shop_medium',
+    'mall',
+  ],
+  'right-bank': [
+    'apartment_low',
+    'apartment_low',
+    'office_low',
+    'house_medium',
+    'shop_small',
+    'apartment_high',
+  ],
+  garden: [
+    'house_small',
+    'house_medium',
+    'house_small',
+    'house_medium',
+    'shop_small',
+    'apartment_low',
+  ],
+  expo: ['office_low', 'apartment_high', 'office_high', 'shop_medium', 'apartment_low', 'museum'],
+  industrial: ['warehouse', 'warehouse', 'factory_small', 'factory_medium', 'office_low'],
+  residential: [
+    'apartment_low',
+    'apartment_high',
+    'apartment_low',
+    'house_medium',
+    'shop_small',
+    'shop_medium',
+  ],
+};
 export const makeBuilding = (type: BuildingType, level = 1): Building => ({
   type,
   level,
@@ -65,7 +140,7 @@ export const makeBuilding = (type: BuildingType, level = 1): Building => ({
 });
 export interface AstanaMap {
   grid: Tile[][];
-  surfaces: ('grass' | 'water' | 'plaza' | 'court')[][];
+  surfaces: ('grass' | 'water' | 'plaza' | 'court' | 'garden' | 'quay')[][];
   changes: { x: number; y: number; id: string; district: DistrictId }[];
   footprint: Map<string, { x: number; y: number }>;
   busLanes: { x: number; y: number }[];
@@ -94,7 +169,7 @@ export function createAstanaMap(decisions: readonly Decision[] = []): AstanaMap 
       x,
       y,
       zone: 'none',
-      building: makeBuilding(distanceToRiver(x, y) < 1.55 ? 'water' : 'grass'),
+      building: makeBuilding(distanceToRiver(x, y) < 1.9 ? 'water' : 'grass'),
       landValue: 60,
       pollution: 0,
       crime: 0,
@@ -103,30 +178,77 @@ export function createAstanaMap(decisions: readonly Decision[] = []): AstanaMap 
     })),
   );
   const surfaces: AstanaMap['surfaces'] = grid.map((row) =>
-    row.map((tile) =>
-      tile.building.type === 'water' ? 'water' : reserved(tile.x, tile.y) ? 'plaza' : 'grass',
-    ),
+    row.map((tile) => {
+      const { x, y } = tile;
+      if (tile.building.type === 'water') return 'water';
+      if (landmarkPlaza(x, y) || axisDistance(x, y) < 0.58) return 'plaza';
+      if (promenade(x, y) || civicPark(x, y)) return 'garden';
+      if (distanceToRiver(x, y) < 2.9) return 'quay';
+      return 'grass';
+    }),
   );
-  const roadXs = [4, 10, 16, 23, 31, 38, 44],
-    roadYs = [5, 11, 17, 31, 38, 44];
+  // Narrow old-town streets meet broader planned avenues. The civic axis itself stays car-free.
+  const northXs = [5, 12, 18, 24, 30, 36, 43, 50, 57, 60];
+  const southXs = [5, 12, 18, 24, 40, 47, 54, 60];
+  const roadYs = [5, 12, 18, 25, 39, 46, 53, 59];
   for (const row of grid)
     for (const tile of row) {
       const { x, y } = tile;
-      const isRoad = roadXs.includes(x) || roadYs.includes(y) || (y === 24 && x > 33);
-      if (!isRoad || reserved(x, y)) continue;
+      const isRoad =
+        (y < 25 ? northXs : southXs).includes(x) || roadYs.includes(y) || (y === 32 && x > 43);
+      if (!isRoad || reserved(x, y) || x < 3 || y < 3 || x > 61 || y > 61) continue;
       const isWater = tile.building.type === 'water';
-      const bridgeRoute = x === 16 || y === 17 || y === 31;
-      if (isWater && !bridgeRoute) continue;
-      if (!isWater && distanceToRiver(x, y) < 2.2 && !bridgeRoute) continue;
+      const bridgeRoute = x === 24 || y === 25 || y === 39 || x === 54;
+      if (distanceToRiver(x, y) < 3 && !bridgeRoute) continue;
       tile.building = makeBuilding(isWater ? 'bridge' : 'road');
       if (isWater) {
         tile.building.bridgeTrackType = 'road';
-        tile.building.bridgeOrientation = x === 16 ? 'ns' : 'ew';
+        tile.building.bridgeOrientation = x === 24 || x === 54 ? 'ns' : 'ew';
       }
     }
+  // Remove isolated road fragments created by river bends and protected civic plazas.
+  // Every driveable tile belongs to the same network, so actors can reach both banks.
+  const visited = new Set<string>();
+  const components: Tile[][] = [];
+  for (const row of grid)
+    for (const tile of row) {
+      if (!['road', 'bridge'].includes(tile.building.type) || visited.has(`${tile.x},${tile.y}`))
+        continue;
+      const component = [tile];
+      visited.add(`${tile.x},${tile.y}`);
+      for (let i = 0; i < component.length; i++) {
+        const current = component[i];
+        for (const [dx, dy] of [
+          [1, 0],
+          [-1, 0],
+          [0, 1],
+          [0, -1],
+        ]) {
+          const next = grid[current.y + dy]?.[current.x + dx];
+          if (
+            !next ||
+            !['road', 'bridge'].includes(next.building.type) ||
+            visited.has(`${next.x},${next.y}`)
+          )
+            continue;
+          visited.add(`${next.x},${next.y}`);
+          component.push(next);
+        }
+      }
+      components.push(component);
+    }
+  components.sort((a, b) => b.length - a.length);
+  for (const component of components.slice(1))
+    for (const tile of component)
+      tile.building = makeBuilding(surfaces[tile.y][tile.x] === 'water' ? 'water' : 'grass');
   const occupied = new Set<string>();
-  const nearRoad = (x: number, y: number) =>
-    roadXs.some((r) => Math.abs(r - x) < 3) || roadYs.some((r) => Math.abs(r - y) < 3);
+  const nearRoad = (x: number, y: number) => {
+    for (let dy = -2; dy <= 2; dy++)
+      for (let dx = -2; dx <= 2; dx++)
+        if (Math.abs(dx) + Math.abs(dy) <= 2 && grid[y + dy]?.[x + dx]?.building.type === 'road')
+          return true;
+    return false;
+  };
   const place = (x: number, y: number, type: BuildingType, level = 1) => {
     const { width, height } = getBuildingSize(type);
     for (let dy = 0; dy < height; dy++)
@@ -136,11 +258,12 @@ export function createAstanaMap(decisions: readonly Decision[] = []): AstanaMap 
           tile = grid[yy]?.[xx];
         if (
           !tile ||
-          xx >= ASTANA_SIZE - 1 ||
-          yy >= ASTANA_SIZE - 1 ||
+          xx >= ASTANA_SIZE - 2 ||
+          yy >= ASTANA_SIZE - 2 ||
           tile.building.type !== 'grass' ||
           reserved(xx, yy) ||
-          distanceToRiver(xx, yy) < 2.75 ||
+          civicPark(xx, yy) ||
+          distanceToRiver(xx, yy) < 3.45 ||
           occupied.has(`${xx},${yy}`)
         )
           return false;
@@ -150,47 +273,62 @@ export function createAstanaMap(decisions: readonly Decision[] = []): AstanaMap 
       for (let dx = 0; dx < width; dx++) occupied.add(`${x + dx},${y + dy}`);
     return true;
   };
-  // Mixed blocks: older right-bank neighbourhoods, a newer left-bank civic centre, and local services.
-  for (let y = 1; y < ASTANA_SIZE - 2; y++)
-    for (let x = 1; x < ASTANA_SIZE - 2; x++) {
-      const n = hash(x, y);
-      if (!nearRoad(x, y) || n % 7 === 0) continue;
-      let type: BuildingType;
-      if (y > 18 && x > 11 && x < 29)
-        type = ['apartment_high', 'office_high', 'apartment_low', 'shop_medium'][
-          n % 4
-        ] as BuildingType;
-      else if (x < 14 && y > 28)
-        type = ['house_small', 'house_medium', 'apartment_low', 'shop_small'][
-          n % 4
-        ] as BuildingType;
-      else
-        type = ['apartment_low', 'apartment_high', 'house_medium', 'office_low', 'shop_small'][
-          n % 5
-        ] as BuildingType;
-      if (n % 29 === 0) type = 'school';
-      else if (n % 31 === 0) type = 'hospital';
-      else if (n % 13 === 0) type = 'park';
-      else if (n % 17 === 0) type = 'tennis';
-      place(x, y, type, 1 + (n % 3));
+  const placeNear = (x: number, y: number, type: BuildingType) => {
+    const neighbourhood = neighbourhoodAt(x, y);
+    const sites = grid
+      .flat()
+      .filter(
+        (tile) =>
+          Math.hypot(tile.x - x, tile.y - y) <= 4 &&
+          neighbourhoodAt(tile.x, tile.y) === neighbourhood,
+      )
+      .sort((a, b) => Math.hypot(a.x - x, a.y - y) - Math.hypot(b.x - x, b.y - y));
+    return sites.some((site) => place(site.x, site.y, type, type.includes('high') ? 4 : 2));
+  };
+  // Addressed civic campuses make the skyline intentional instead of a random mix of towers.
+  for (const [x, y, type] of [
+    [21, 26, 'office_high'],
+    [28, 27, 'office_high'],
+    [31, 36, 'city_hall'],
+    [21, 35, 'office_high'],
+    [25, 48, 'university'],
+    [26, 53, 'museum'],
+    [44, 29, 'museum'],
+    [51, 35, 'community_center'],
+    [14, 9, 'school'],
+    [32, 8, 'hospital'],
+    [55, 9, 'warehouse'],
+  ] as [number, number, BuildingType][])
+    placeNear(x, y, type);
+  for (let y = 4; y < ASTANA_SIZE - 3; y++)
+    for (let x = 4; x < ASTANA_SIZE - 3; x++) {
+      const n = hash(x, y),
+        neighbourhood = neighbourhoodAt(x, y),
+        palette = buildingPalette[neighbourhood];
+      if (!palette.length || !nearRoad(x, y) || n % (neighbourhood === 'garden' ? 4 : 9) === 0)
+        continue;
+      let type = palette[n % palette.length];
+      if (n % 43 === 0) type = 'school';
+      else if (n % 59 === 0) type = 'hospital';
+      else if (n % 23 === 0) type = 'park';
+      else if (n % 37 === 0) type = 'tennis';
+      const modern = neighbourhood === 'civic' || neighbourhood === 'expo';
+      place(x, y, type, modern ? 2 + (n % 3) : 1 + (n % 2));
     }
-  // Tree-lined embankments and a generous pedestrian civic axis.
+  // Consistent double rows on Nurzhol, planted embankments, and a generous outer green belt.
   for (const row of grid)
     for (const tile of row) {
       const { x, y } = tile,
-        n = hash(x, y);
-      if (tile.building.type !== 'grass' || occupied.has(`${x},${y}`)) continue;
-      if (
-        (distanceToRiver(x, y) > 1.7 && distanceToRiver(x, y) < 3.2 && n % 2 === 0) ||
-        (!reserved(x, y) && n % 11 === 0)
-      )
-        tile.building = makeBuilding('tree');
-      if (
-        promenade(x, y) &&
-        !ASTANA_LANDMARKS.some((l) => Math.hypot(x - l.x, y - l.y) < 1.7) &&
-        n % 3 === 0
-      )
-        tile.building = makeBuilding('tree');
+        n = hash(x, y),
+        distance = distanceToRiver(x, y);
+      if (tile.building.type !== 'grass' || occupied.has(`${x},${y}`) || landmarkPlaza(x, y))
+        continue;
+      const onAxis = promenade(x, y) && axisDistance(x, y) > 0.7 && x % 2 === 0;
+      const bank = distance > 2.9 && distance < 4.4 && n % 3 !== 0;
+      const inPark = civicPark(x, y) && n % 3 === 0;
+      const outerTrees = neighbourhoodAt(x, y) === 'greenbelt' && n % 4 === 0;
+      if (onAxis || bank || inPark || outerTrees || (!reserved(x, y) && n % 19 === 0))
+        tile.building = makeBuilding('tree', 1 + (n % 3));
     }
   const changes: AstanaMap['changes'] = [],
     busLanes: AstanaMap['busLanes'] = [],
@@ -262,7 +400,7 @@ export function createAstanaMap(decisions: readonly Decision[] = []): AstanaMap 
             if (
               ['water', 'road', 'bridge'].includes(grid[y][x].building.type) ||
               reserved(x, y) ||
-              distanceToRiver(x, y) < 2.6 ||
+              distanceToRiver(x, y) < 3.2 ||
               used.has(`${x},${y}`)
             )
               return false;

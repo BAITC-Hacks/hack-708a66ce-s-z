@@ -40,6 +40,8 @@ async function adopt(page: Page, id: string, district = 'nura') {
   await page.getByTestId('commit-policy').click();
   await expect(page.getByTestId('applied-summary')).toBeVisible();
   await expect(page.getByTestId('city-policy-callout')).toContainText('Funded');
+  if (id === 'M12')
+    await expect(page.getByTestId('city-policy-callout')).toContainText('All five districts');
   const next = page.getByRole('button', { name: 'Next decision', exact: true });
   if (await next.isVisible()) await next.click();
 }
@@ -149,6 +151,10 @@ test('offline file launch includes artwork, complete gameplay and local advice w
   await panel(page, 'AI advisor');
   await page.getByRole('button', { name: 'Get advice', exact: true }).click();
   await expect(page.locator('.advice-origin')).toContainText('Local analysis');
+  const offlineConnection = page.locator('.panel-advisor').getByTestId('advisor-connection');
+  await offlineConnection.locator(':scope > summary').click();
+  await expect(offlineConnection).toContainText('npm run demo');
+  await expect(offlineConnection.getByTestId('advisor-openai-key')).toHaveCount(0);
   await page.keyboard.press('Escape');
   for (const [id, district] of example) await adopt(page, id, district);
   await page
@@ -280,4 +286,103 @@ test('arrival, briefing, handbook and city preferences form an accessible comple
   );
   await page.getByRole('button', { name: 'Decision sounds', exact: true }).click();
   await page.getByRole('button', { name: 'Decision sounds', exact: true }).click();
+});
+
+test('map gestures keep the selected district and visible advice opens a free preview', async ({
+  page,
+}) => {
+  await page.goto('/');
+  await english(page);
+  const district = page.getByRole('combobox', { name: 'Select district', exact: true });
+  await expect(district).toHaveValue('nura');
+  const world = page.getByTestId('city-world');
+  const bounds = await world.boundingBox();
+  expect(bounds).not.toBeNull();
+  const x = bounds!.width * 0.65,
+    y = bounds!.height * 0.42;
+  await page.mouse.move(x, y);
+  await page.mouse.wheel(0, 360);
+  await page.mouse.click(x, y);
+  await expect(district).toHaveValue('nura');
+  await page.mouse.down();
+  await page.mouse.move(x + 130, y + 75, { steps: 8 });
+  await page.mouse.up();
+  await expect(district).toHaveValue('nura');
+  await district.focus();
+  await district.hover();
+  await page.mouse.wheel(0, 240);
+  await expect(district).toHaveValue('nura');
+  await expect(page.getByTestId('budget')).toContainText('100');
+  await expect(page.getByTestId('city-advice')).toContainText('Local');
+  await page.getByTestId('preview-suggestion').click();
+  await expect(page.getByTestId('commit-policy')).toBeEnabled();
+  await expect(page.getByTestId('budget')).toContainText('100');
+  await expect(page.getByTestId('score')).toContainText('52.56');
+  await page.keyboard.press('Escape');
+  await district.selectOption('almaty');
+  await expect(district).toHaveValue('almaty');
+  await page.getByRole('button', { name: 'Reset map', exact: true }).click();
+  const marker = page.locator('.isocity-marker').filter({ hasText: 'Nura' });
+  // A trackpad scroll can be followed by a click on the same moving label.
+  await marker.dispatchEvent('wheel', { deltaY: 1, bubbles: true, cancelable: true });
+  await marker.dispatchEvent('click', { detail: 1, bubbles: true, cancelable: true });
+  await expect(district).toHaveValue('almaty');
+  // Keyboard activation remains available during the pointer-only gesture guard.
+  await marker.press('Enter');
+  await expect(district).toHaveValue('nura');
+});
+
+test('optional onboarding key connection clears input and never persists or calls a provider', async ({
+  page,
+}) => {
+  let connected = false;
+  let adviceRequests = 0;
+  const submitted: Record<string, unknown>[] = [];
+  const token = 'browser-test-session-token-with-sufficient-length';
+  const status = () => ({
+    openai: { configured: connected, source: connected ? 'session' : 'none' },
+    jev: { configured: false, source: 'none' },
+  });
+  await page.route('**/api/session-credentials', async (route) => {
+    if (route.request().method() === 'GET') {
+      await route.fulfill({ json: { csrfToken: token, ...status() } });
+      return;
+    }
+    expect(route.request().headers()['x-qala-session-token']).toBe(token);
+    const body = route.request().postDataJSON();
+    submitted.push(body);
+    connected = body.action === 'connect';
+    await route.fulfill({ json: status() });
+  });
+  await page.route('**/api/decision-support', async (route) => {
+    adviceRequests++;
+    await route.abort();
+  });
+  await page.goto('/');
+  await page.getByRole('button', { name: 'EN', exact: true }).click();
+  await page.getByRole('button', { name: 'Take office', exact: true }).click();
+  const connection = page.getByTestId('onboarding-briefing').getByTestId('advisor-connection');
+  await connection.locator(':scope > summary').click();
+  await expect(connection.getByTestId('advisor-openai-key')).toBeVisible();
+  await page.screenshot({ path: 'docs/screenshots/ai-connection.png' });
+  await page.setViewportSize({ width: 390, height: 844 });
+  expect(await page.evaluate(() => document.documentElement.scrollWidth <= innerWidth)).toBe(true);
+  const fakeKey = 'demo-placeholder-key-not-a-real-credential';
+  await connection.getByTestId('advisor-openai-key').fill(fakeKey);
+  await connection.getByRole('button', { name: 'Connect for this session', exact: true }).click();
+  await expect(connection.getByTestId('advisor-openai-key')).toHaveValue('');
+  await expect(connection.getByTestId('advisor-key-status')).toContainText('this server session');
+  expect(submitted).toEqual([{ action: 'connect', openaiKey: fakeKey }]);
+  expect(adviceRequests).toBe(0);
+  const browserStorage = await page.evaluate(() =>
+    JSON.stringify({ local: { ...localStorage }, session: { ...sessionStorage } }),
+  );
+  expect(browserStorage).not.toContain(fakeKey);
+  await connection.getByRole('button', { name: 'Disconnect', exact: true }).click();
+  await expect(connection.getByTestId('advisor-key-status')).toHaveCount(0);
+  await expect(connection).toContainText('Session keys cleared');
+  expect(adviceRequests).toBe(0);
+  await connection.locator(':scope > summary').click();
+  await page.getByRole('button', { name: 'Meet your city', exact: true }).click();
+  await expect(page.getByTestId('budget')).toContainText('100');
 });

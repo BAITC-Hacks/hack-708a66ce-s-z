@@ -24,6 +24,7 @@ export default defineConfig({
     },
   ],
   base: './',
-  server: { proxy: { '/api': 'http://127.0.0.1:8789' } },
+  // Preserve the browser Host so the local API can verify the exact Origin.
+  server: { proxy: { '/api': { target: 'http://127.0.0.1:8789', changeOrigin: false } } },
   build: { target: 'es2022' },
 });

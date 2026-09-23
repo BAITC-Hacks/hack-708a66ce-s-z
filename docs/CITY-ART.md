@@ -1,5 +1,7 @@
 # Living city art and layout
 
+> Historical design record. The active release uses the IsoCity game experience described in [README](../README.md), [the final-hour plan](FINAL-HOUR.md), and [the current city integration](ISOCITY.md). Earlier renderer, palette and map-first proposals below are retained as project history.
+
 The playable city is an illustrative isometric Astana, not a surveyed geographic model. The official district dataset and deterministic policy engine remain the source of all simulation results. Movement, architecture and street life are presentation only.
 
 ## City life sprite atlas
